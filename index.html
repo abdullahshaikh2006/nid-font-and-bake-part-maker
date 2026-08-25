@@ -2,37 +2,35 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>হিসাবের খাতা - লগইন ও রেজিষ্ট্রেশন</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>NID Card Pro - Professional PDF Processor</title>
+    <meta name="description" content="Professional NID Card PDF processor with HD quality">
     
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #06b6d4;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
             --success: #10b981;
-            --danger: #ef4444;
             --warning: #f59e0b;
+            --danger: #ef4444;
             --dark: #1e293b;
             --light: #f8fafc;
-            --gray: #64748b;
             --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --radius: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.15);
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-light: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
         * {
@@ -42,411 +40,45 @@
         }
 
         body {
-            font-family: 'Hind Siliguri', 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', 'Hind Siliguri', sans-serif;
+            background: linear-gradient(45deg, #f8f9fa 0%, #e9ecef 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
             overflow-x: hidden;
         }
 
-        /* Animated Background */
-        .animated-bg {
+        /* Loading Screen */
+        .loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .bg-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            animation: float 20s infinite;
-        }
-
-        .bg-circle:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            top: -150px;
-            left: -150px;
-            animation-delay: 0s;
-        }
-
-        .bg-circle:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            bottom: -100px;
-            right: -100px;
-            animation-delay: 5s;
-        }
-
-        .bg-circle:nth-child(3) {
-            width: 150px;
-            height: 150px;
-            top: 50%;
-            left: 50%;
-            animation-delay: 10s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(50px, -50px) scale(1.1); }
-            50% { transform: translate(0, -100px) scale(0.9); }
-            75% { transform: translate(-50px, -50px) scale(1.05); }
-        }
-
-        /* Online/Offline Status */
-        .connection-status {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
+            background: rgba(255,255,255,0.98);
             display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 10px 16px;
-            border-radius: 25px;
-            box-shadow: var(--shadow);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            animation: pulse-dot 2s infinite;
-        }
-
-        .status-dot.online {
-            background: var(--success);
-        }
-
-        .status-dot.offline {
-            background: var(--danger);
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.5); }
-        }
-
-        .connection-status.online {
-            color: var(--success);
-        }
-
-        .connection-status.offline {
-            color: var(--danger);
-        }
-
-        /* Language Toggle */
-        .lang-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 4px;
-            border-radius: 25px;
-            box-shadow: var(--shadow);
-        }
-
-        .lang-btn {
-            background: none;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            font-family: inherit;
-            font-size: 14px;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .lang-btn:hover {
-            color: var(--primary);
-        }
-
-        .lang-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: var(--shadow);
-        }
-
-        /* Auth Container */
-        .auth-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow-xl);
-            width: 100%;
-            max-width: 480px;
-            margin: 80px 20px 20px 20px;
-            padding: 40px;
-            animation: slideUp 0.6s ease;
-            position: relative;
-            max-height: calc(100vh - 100px);
-            overflow-y: auto;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .auth-logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 36px;
-            animation: pulse 2s infinite;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-        }
-
-        .auth-logo::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 3px solid var(--primary);
-            animation: ripple 2s infinite;
-        }
-
-        @keyframes ripple {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.3); opacity: 0; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .auth-header h1 {
-            font-size: 28px;
-            color: var(--dark);
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .auth-header p {
-            color: var(--gray);
-            font-size: 16px;
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 14px;
-        }
-
-        .input-group {
-            position: relative;
-            display: flex;
             align-items: center;
+            z-index: 10000;
+            transition: all 0.5s ease;
         }
 
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            color: var(--gray);
-            transition: var(--transition);
-            font-size: 18px;
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
-        .input-group input {
-            width: 100%;
-            padding: 14px 45px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 16px;
-            transition: var(--transition);
-            font-family: inherit;
-            background: #f8fafc;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .input-group input:focus + i,
-        .input-group input:focus ~ i {
-            color: var(--primary);
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--gray);
-            transition: var(--transition);
-            font-size: 18px;
-        }
-
-        .password-toggle:hover {
-            color: var(--primary);
-        }
-
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--gray);
-        }
-
-        .checkbox-label input[type="checkbox"] {
-            width: auto;
-            cursor: pointer;
-            accent-color: var(--primary);
-        }
-
-        .forgot-password {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .forgot-password:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .btn {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .auth-footer {
+        .loader-content {
             text-align: center;
-            margin-top: 20px;
-            color: var(--gray);
         }
 
-        .auth-footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .auth-footer a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
+        .loader-ring {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            display: none;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
@@ -454,964 +86,1318 @@
             100% { transform: rotate(360deg); }
         }
 
-        .btn.loading .spinner {
-            display: inline-block;
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 15px 0;
         }
 
-        .btn.loading .btn-text {
-            display: none;
-        }
-
-        .btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        /* Notification System */
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 10px;
         }
 
-        .notification {
-            padding: 16px 20px;
-            border-radius: 12px;
+        .navbar-brand i {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .btn-language {
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-language:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Main Container */
+        .main-container {
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+
+        /* Cards */
+        .card-custom {
+            border: none;
+            border-radius: 20px;
             background: white;
-            box-shadow: var(--shadow-xl);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 50px rgba(0,0,0,0.15);
+        }
+
+        .card-header-custom {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
             display: flex;
             align-items: center;
-            gap: 12px;
-            animation: slideInRight 0.3s ease;
-            min-width: 300px;
-            max-width: 400px;
+            gap: 10px;
+        }
+
+        .card-header-custom i {
+            font-size: 1.5rem;
+        }
+
+        .card-body-custom {
+            padding: 25px;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 3px dashed var(--primary);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             position: relative;
             overflow: hidden;
         }
 
-        .notification::before {
+        .upload-zone::before {
             content: '';
             position: absolute;
-            left: 0;
             top: 0;
-            width: 4px;
+            left: -100%;
+            width: 100%;
             height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            transition: all 0.5s ease;
         }
 
-        .notification.success::before {
-            background: var(--success);
+        .upload-zone:hover::before {
+            left: 100%;
         }
 
-        .notification.error::before {
-            background: var(--danger);
+        .upload-zone:hover {
+            border-color: var(--secondary);
+            transform: scale(1.02);
         }
 
-        .notification.warning::before {
-            background: var(--warning);
+        .upload-zone.dragover {
+            border-color: var(--success);
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            animation: pulse 1s infinite;
         }
 
-        .notification.info::before {
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover .upload-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        /* Buttons */
+        .btn-custom {
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-custom:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn-custom:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary-gradient {
+            background: var(--gradient);
+            color: white;
+            border: none;
+        }
+
+        .btn-success-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-warning-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-danger-gradient {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            background: #f1f5f9;
+            border-radius: 15px;
+            padding: 5px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #64748b;
+        }
+
+        .toggle-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .toggle-btn:hover {
+            color: var(--primary);
+        }
+
+        /* Preview Area */
+        .preview-container {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--border);
+        }
+
+        /* A4 Page */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            margin: 0 auto;
+            padding: 10mm;
+            box-shadow: 0 0 40px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .a4-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient);
+            border-radius: 10px 10px 0 0;
+        }
+
+        /* NID Card */
+        .nid-card-wrapper {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: grab;
+        }
+
+        .nid-card-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .nid-card-wrapper:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        .nid-card-wrapper:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .nid-card-wrapper canvas {
+            width: 100% !important;
+            height: auto !important;
+            display: block;
+            border-radius: 0 0 12px 12px;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            background: white;
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: var(--shadow-md);
+            display: inline-flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #f1f5f9;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .zoom-btn:hover {
             background: var(--primary);
+            color: white;
+            transform: scale(1.1);
         }
 
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .zoom-level {
+            padding: 5px 15px;
+            font-weight: 600;
+            color: var(--dark);
+            min-width: 60px;
+            text-align: center;
         }
 
-        .notification.slide-out {
-            animation: slideOutRight 0.3s ease forwards;
+        /* Toast */
+        .toast-custom {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow-lg);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(300px);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        @keyframes slideOutRight {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(100px);
-            }
+        .toast-custom.show {
+            transform: translateX(0);
         }
 
-        .notification-icon {
+        .toast-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
         }
 
-        .notification.success .notification-icon {
-            background: #d1fae5;
-            color: var(--success);
+        .toast-success .toast-icon {
+            background: var(--success);
         }
 
-        .notification.error .notification-icon {
-            background: #fee2e2;
-            color: var(--danger);
+        .toast-error .toast-icon {
+            background: var(--danger);
         }
 
-        .notification.warning .notification-icon {
-            background: #fef3c7;
-            color: var(--warning);
+        .toast-warning .toast-icon {
+            background: var(--warning);
         }
 
-        .notification.info .notification-icon {
-            background: #dbeafe;
-            color: var(--primary);
+        /* Animation Classes */
+        .animate-in {
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 2px;
-            font-size: 16px;
-        }
-
-        .notification-message {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        .notification-close {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--gray);
-            font-size: 18px;
-            transition: var(--transition);
-            padding: 5px;
-        }
-
-        .notification-close:hover {
-            color: var(--danger);
-        }
-
-        /* Offline Mode Banner */
-        .offline-banner {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            text-align: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .offline-banner.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
+        @keyframes slideInUp {
             from {
+                transform: translateY(30px);
                 opacity: 0;
-                transform: translateY(-10px);
             }
             to {
-                opacity: 1;
                 transform: translateY(0);
+                opacity: 1;
             }
         }
 
-        /* Mobile Responsive */
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Modal */
+        .modal-custom {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-custom.show {
+            display: flex;
+        }
+
+        .modal-content-custom {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.7);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .modal-custom.show .modal-content-custom {
+            transform: scale(1);
+        }
+
+        /* Progress Bar */
+        .progress-bar-custom {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .a4-page {
+                width: 100%;
+                min-height: auto;
+                padding: 5mm;
+            }
+        }
+
         @media (max-width: 768px) {
-            .auth-container {
-                margin: 70px 10px 10px 10px;
-                padding: 30px 20px;
-                max-height: calc(100vh - 80px);
+            .main-container {
+                padding-top: 80px;
             }
-
-            .auth-header h1 {
-                font-size: 24px;
+            
+            .card-body-custom {
+                padding: 15px;
             }
-
-            .btn {
-                padding: 12px 20px;
-                font-size: 14px;
+            
+            .btn-custom {
+                padding: 10px 20px;
+                font-size: 0.9rem;
             }
-
-            .lang-toggle {
-                top: 10px;
-                right: 10px;
-            }
-
-            .lang-btn {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            .connection-status {
-                top: 10px;
-                left: 10px;
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-
-            .notification {
-                min-width: auto;
-                max-width: calc(100vw - 40px);
-                margin: 0 20px;
-            }
-
-            .notification-container {
-                top: 60px;
-                right: 0;
-                left: 0;
-                align-items: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .auth-container {
+            
+            .upload-zone {
                 padding: 25px 15px;
             }
-
-            .auth-logo {
-                width: 60px;
-                height: 60px;
-                font-size: 28px;
+            
+            .upload-icon {
+                font-size: 3rem;
             }
-
-            .form-options {
-                flex-direction: column;
-                align-items: flex-start;
+            
+            .navbar-brand {
+                font-size: 1.2rem;
             }
+            
+            .navbar-brand i {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .navbar, .no-print {
+                display: none !important;
+            }
+            
+            .a4-page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                width: 100% !important;
+                min-height: 100vh !important;
+            }
+            
+            body {
+                background: white !important;
+            }
+            
+            .main-container {
+                padding: 0 !important;
+            }
+            
+            .card-custom {
+                box-shadow: none !important;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--primary);
+            color: white;
         }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="animated-bg">
-        <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-ring"></div>
+            <h5 class="mt-3">Loading NID Card Pro...</h5>
+            <p class="text-muted">Please wait</p>
+        </div>
     </div>
 
-    <!-- Connection Status -->
-    <div class="connection-status" id="connectionStatus">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">অনলাইন</span>
-    </div>
-
-    <!-- Language Toggle -->
-    <div class="lang-toggle">
-        <button class="lang-btn active" id="bnBtn" onclick="setLanguage('bn')">
-            <i class="fas fa-language"></i> বাংলা
-        </button>
-        <button class="lang-btn" id="enBtn" onclick="setLanguage('en')">
-            <i class="fas fa-globe"></i> English
-        </button>
-    </div>
-
-    <!-- Notification Container -->
-    <div class="notification-container" id="notificationContainer"></div>
-
-    <!-- Auth Container -->
-    <div class="auth-container">
-        <!-- Login Section -->
-        <div id="loginSection">
-            <div class="auth-header">
-                <div class="auth-logo">
-                    <i class="fas fa-calculator"></i>
-                </div>
-                <h1 data-en="Accounting System" data-bn="হিসাবের খাতা">হিসাবের খাতা</h1>
-                <p data-en="Sign in to your account" data-bn="আপনার অ্যাকাউন্টে সাইন ইন করুন">আপনার অ্যাকাউন্টে সাইন ইন করুন</p>
-            </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-id-card-alt"></i>
+                <span>NID Card Pro</span>
+            </a>
             
-            <div class="offline-banner" id="offlineBanner">
-                <i class="fas fa-wifi"></i> 
-                <span data-en="You are offline. Login with saved credentials." data-bn="আপনি অফলাইনে আছেন। সেভ করা তথ্য দিয়ে লগইন করুন।">আপনি অফলাইনে আছেন। সেভ করা তথ্য দিয়ে লগইন করুন।</span>
-            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             
-            <form id="loginForm">
-                <div class="form-group">
-                    <label data-en="Email Address" data-bn="ইমেইল ঠিকানা">ইমেইল ঠিকানা</label>
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="loginEmail" placeholder="example@email.com" required autocomplete="email">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label data-en="Password" data-bn="পাসওয়ার্ড">পাসওয়ার্ড</label>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
-                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
-                            <i class="fas fa-eye"></i>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-2">
+                        <button class="btn btn-language btn-primary-gradient" onclick="switchLanguage('bn')">
+                            <i class="fas fa-language me-1"></i>
+                            বাংলা
                         </button>
-                    </div>
-                </div>
-                
-                <div class="form-options">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="rememberMe" checked>
-                        <span data-en="Remember me" data-bn="আমাকে মনে রাখুন">আমাকে মনে রাখুন</span>
-                    </label>
-                    <a href="#" class="forgot-password" onclick="showForgotPassword()" data-en="Forgot Password?" data-bn="পাসওয়ার্ড ভুলে গেছেন?">পাসওয়ার্ড ভুলে গেছেন?</a>
-                </div>
-                
-                <button type="submit" class="btn btn-primary" id="loginBtn">
-                    <span class="spinner"></span>
-                    <span class="btn-text">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span data-en="Login" data-bn="লগইন">লগইন</span>
-                    </span>
-                </button>
-            </form>
-            
-            <div class="auth-footer">
-                <p>
-                    <span data-en="Don't have an account?" data-bn="অ্যাকাউন্ট নেই?">অ্যাকাউন্ট নেই?</span>
-                    <a href="#" onclick="showRegister()" data-en="Register" data-bn="রেজিস্টার করুন">রেজিস্টার করুন</a>
-                </p>
-            </div>
-        </div>
-
-        <!-- Register Section -->
-        <div id="registerSection" style="display: none;">
-            <div class="auth-header">
-                <div class="auth-logo">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <h1 data-en="Create Account" data-bn="নতুন অ্যাকাউন্ট">নতুন অ্যাকাউন্ট</h1>
-                <p data-en="Register to get started" data-bn="রেজিস্টার করে শুরু করুন">রেজিস্টার করে শুরু করুন</p>
-            </div>
-            
-            <div class="offline-banner" id="offlineBannerRegister">
-                <i class="fas fa-wifi"></i> 
-                <span data-en="You are offline. Registration requires internet connection." data-bn="আপনি অফলাইনে আছেন। রেজিষ্ট্রেশনের জন্য ইন্টারনেট সংযোগ প্রয়োজন।">আপনি অফলাইনে আছেন। রেজিষ্ট্রেশনের জন্য ইন্টারনেট সংযোগ প্রয়োজন।</span>
-            </div>
-            
-            <form id="registerForm">
-                <div class="form-group">
-                    <label data-en="Full Name" data-bn="সম্পূর্ণ নাম">সম্পূর্ণ নাম</label>
-                    <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="registerName" placeholder="আপনার নাম" required autocomplete="name">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label data-en="Business Name (Optional)" data-bn="ব্যবসার নাম (ঐচ্ছিক)">ব্যবসার নাম (ঐচ্ছিক)</label>
-                    <div class="input-group">
-                        <i class="fas fa-building"></i>
-                        <input type="text" id="businessName" placeholder="ব্যবসার নাম" autocomplete="organization">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label data-en="Mobile Number" data-bn="মোবাইল নম্বর">মোবাইল নম্বর</label>
-                    <div class="input-group">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="mobileNumber" placeholder="01XXXXXXXXX" required autocomplete="tel">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label data-en="Email Address" data-bn="ইমেইল ঠিকানা">ইমেইল ঠিকানা</label>
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="registerEmail" placeholder="example@email.com" required autocomplete="email">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label data-en="Password" data-bn="পাসওয়ার্ড">পাসওয়ার্ড</label>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="registerPassword" placeholder="কমপক্ষে ৬ অক্ষর" required autocomplete="new-password">
-                        <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
-                            <i class="fas fa-eye"></i>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-language btn-primary-gradient" onclick="switchLanguage('en')">
+                            <i class="fas fa-language me-1"></i>
+                            English
                         </button>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label data-en="Confirm Password" data-bn="পাসওয়ার্ড নিশ্চিত করুন">পাসওয়ার্ড নিশ্চিত করুন</label>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="confirmPassword" placeholder="পাসওয়ার্ড দিন" required autocomplete="new-password">
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary" id="registerBtn">
-                    <span class="spinner"></span>
-                    <span class="btn-text">
-                        <i class="fas fa-user-plus"></i>
-                        <span data-en="Register" data-bn="রেজিস্টার করুন">রেজিস্টার করুন</span>
-                    </span>
-                </button>
-            </form>
-            
-            <div class="auth-footer">
-                <p>
-                    <span data-en="Already have an account?" data-bn="ইতিমধ্যে অ্যাকাউন্ট আছে?">ইতিমধ্যে অ্যাকাউন্ট আছে?</span>
-                    <a href="#" onclick="showLogin()" data-en="Login" data-bn="লগইন করুন">লগইন করুন</a>
-                </p>
+                    </li>
+                </ul>
             </div>
         </div>
+    </nav>
 
-        <!-- Forgot Password Section -->
-        <div id="forgotPasswordSection" style="display: none;">
-            <div class="auth-header">
-                <div class="auth-logo">
-                    <i class="fas fa-key"></i>
-                </div>
-                <h1 data-en="Reset Password" data-bn="পাসওয়ার্ড রিসেট">পাসওয়ার্ড রিসেট</h1>
-                <p data-en="Enter your email to receive reset link" data-bn="রিসেট লিংক পেতে ইমেইল দিন">রিসেট লিংক পেতে ইমেইল দিন</p>
-            </div>
-            
-            <form id="forgotPasswordForm">
-                <div class="form-group">
-                    <label data-en="Email Address" data-bn="ইমেইল ঠিকানা">ইমেইল ঠিকানা</label>
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="forgotEmail" placeholder="example@email.com" required>
+    <!-- Main Content -->
+    <div class="container main-container">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <div class="col-lg-4 col-md-5 mb-4">
+                <div class="card-custom">
+                    <div class="card-header-custom">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h5 class="mb-0" data-i18n="upload_title">PDF আপলোড করুন</h5>
+                    </div>
+                    
+                    <div class="card-body-custom">
+                        <!-- Upload Zone -->
+                        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('pdfInput').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <h6 class="mb-2" data-i18n="upload_instruction">এখানে ক্লিক করুন অথবা PDF ড্র্যাগ করুন</h6>
+                            <p class="text-muted small mb-0" data-i18n="upload_hint">সর্বোচ্চ 2টি PDF ফাইল সাপোর্ট করা হয়</p>
+                            <input type="file" id="pdfInput" accept=".pdf" class="d-none" multiple>
+                        </div>
+                        
+                        <!-- Card Position Toggle -->
+                        <div class="mt-4">
+                            <label class="form-label fw-bold" data-i18n="card_position">কার্ড পজিশন</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" id="topFirstBtn" onclick="setTopFirst(true)">
+                                    <i class="fas fa-arrow-up me-1"></i>
+                                    <span data-i18n="card1_top">কার্ড ১ উপরে</span>
+                                </button>
+                                <button class="toggle-btn" id="bottomFirstBtn" onclick="setTopFirst(false)">
+                                    <i class="fas fa-arrow-down me-1"></i>
+                                    <span data-i18n="card2_top">কার্ড ২ উপরে</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Status -->
+                        <div id="uploadStatus" class="mt-3 d-none">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="fw-bold" data-i18n="uploaded_files">আপলোডকৃত ফাইল</span>
+                                <button class="btn btn-sm btn-danger" onclick="clearFiles()">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div id="fileList"></div>
+                            <div class="progress-bar-custom mt-2">
+                                <div class="progress-bar-fill" id="uploadProgress"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="mt-4">
+                            <button class="btn btn-custom btn-success-gradient w-100 mb-2" onclick="downloadPDF()" id="downloadPdfBtn" disabled>
+                                <i class="fas fa-download me-2"></i>
+                                <span data-i18n="download_pdf">PDF ডাউনলোড</span>
+                            </button>
+                            
+                            <button class="btn btn-custom btn-primary-gradient w-100 mb-2" onclick="printPDF()" id="printBtn" disabled>
+                                <i class="fas fa-print me-2"></i>
+                                <span data-i18n="print">প্রিন্ট</span>
+                            </button>
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col-5">
+                                    <select class="form-select" id="imageFormat">
+                                        <option value="png">PNG</option>
+                                        <option value="jpeg">JPEG</option>
+                                        <option value="webp">WEBP</option>
+                                        <option value="svg">SVG</option>
+                                    </select>
+                                </div>
+                                <div class="col-7">
+                                    <button class="btn btn-custom btn-warning-gradient w-100" onclick="downloadImage()" id="downloadImgBtn" disabled>
+                                        <i class="fas fa-image me-1"></i>
+                                        <span data-i18n="download_image">ইমেজ ডাউনলোড</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-custom btn-danger-gradient w-100" onclick="resetAll()">
+                                <i class="fas fa-redo me-2"></i>
+                                <span data-i18n="reset">রিসেট</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-paper-plane"></i>
-                    <span data-en="Send Reset Link" data-bn="রিসেট লিংক পাঠান">রিসেট লিংক পাঠান</span>
-                </button>
-            </form>
+            </div>
             
-            <div class="auth-footer">
-                <p>
-                    <a href="#" onclick="showLogin()" data-en="Back to Login" data-bn="লগইনে ফিরে যান">লগইনে ফিরে যান</a>
-                </p>
+            <!-- Right Preview -->
+            <div class="col-lg-8 col-md-7">
+                <div class="card-custom">
+                    <div class="card-header-custom">
+                        <i class="fas fa-eye"></i>
+                        <h5 class="mb-0" data-i18n="preview_title">প্রিভিউ</h5>
+                        
+                        <div class="ms-auto">
+                            <div class="zoom-controls">
+                                <button class="zoom-btn" onclick="zoomOut()">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="zoom-level" id="zoomLevel">100%</span>
+                                <button class="zoom-btn" onclick="zoomIn()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body-custom">
+                        <!-- Empty State -->
+                        <div class="text-center py-5" id="noFileMessage">
+                            <i class="fas fa-file-pdf fa-5x text-muted mb-3 float-animation"></i>
+                            <h5 class="text-muted" data-i18n="no_file">কোনো PDF ফাইল আপলোড করা হয়নি</h5>
+                            <p class="text-muted small" data-i18n="upload_first">প্রথমে PDF ফাইল আপলোড করুন</p>
+                        </div>
+                        
+                        <!-- Preview Container -->
+                        <div class="preview-container d-none" id="previewContainer">
+                            <div class="a4-page" id="a4Page">
+                                <!-- Card 1 -->
+                                <div class="nid-card-wrapper" id="card1">
+                                    <canvas id="pdfCanvas1"></canvas>
+                                </div>
+                                
+                                <!-- Card 2 -->
+                                <div class="nid-card-wrapper mt-4" id="card2">
+                                    <canvas id="pdfCanvas2"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Custom Toast -->
+    <div class="toast-custom" id="toast">
+        <div class="toast-icon" id="toastIcon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="toast-message" id="toastMessage"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5 no-print">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>NID Card Pro</h6>
+                    <p class="small mb-0" data-i18n="footer_copyright">© ২০২৬ NID Card Pro - সর্বস্বত্ব সংরক্ষিত</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="social-links">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB16ZrdZ2IY_R8aSZipz-O6SelEblngJLE",
-            authDomain: "marketing-calculation.firebaseapp.com",
-            databaseURL: "https://marketing-calculation-default-rtdb.firebaseio.com",
-            projectId: "marketing-calculation",
-            storageBucket: "marketing-calculation.firebasestorage.app",
-            messagingSenderId: "371475369216",
-            appId: "1:371475369216:web:3aff3d68b707f65c1e77e5",
-            measurementId: "G-79164G85DX"
+        // ========== LANGUAGE TRANSLATIONS ==========
+        const translations = {
+            bn: {
+                upload_title: 'PDF আপলোড করুন',
+                upload_instruction: 'এখানে ক্লিক করুন অথবা PDF ড্র্যাগ করুন',
+                upload_hint: 'সর্বোচ্চ 2টি PDF ফাইল সাপোর্ট করা হয়',
+                card_position: 'কার্ড পজিশন',
+                card1_top: 'কার্ড ১ উপরে',
+                card2_top: 'কার্ড ২ উপরে',
+                uploaded_files: 'আপলোডকৃত ফাইল',
+                download_pdf: 'PDF ডাউনলোড',
+                print: 'প্রিন্ট',
+                download_image: 'ইমেজ ডাউনলোড',
+                reset: 'রিসেট',
+                preview_title: 'প্রিভিউ',
+                no_file: 'কোনো PDF ফাইল আপলোড করা হয়নি',
+                upload_first: 'প্রথমে PDF ফাইল আপলোড করুন',
+                footer_copyright: '© ২০২৬ NID Card Pro - সর্বস্বত্ব সংরক্ষিত',
+                success_upload: 'PDF ফাইল সফলভাবে লোড হয়েছে!',
+                error_upload: 'PDF ফাইল লোড করতে সমস্যা হয়েছে!',
+                invalid_file: 'অবৈধ ফাইল! শুধুমাত্র PDF ফাইল সাপোর্ট করা হয়',
+                pdf_required: 'অনুগ্রহ করে প্রথমে PDF ফাইল আপলোড করুন',
+                download_success: 'ডাউনলোড সফল হয়েছে!',
+                print_success: 'প্রিন্ট শুরু হয়েছে!',
+                reset_success: 'সবকিছু রিসেট হয়েছে!',
+                file_limit: 'সর্বোচ্চ 2টি ফাইল সাপোর্ট করা হয়'
+            },
+            en: {
+                upload_title: 'Upload PDF',
+                upload_instruction: 'Click here or drag PDF',
+                upload_hint: 'Maximum 2 PDF files supported',
+                card_position: 'Card Position',
+                card1_top: 'Card 1 Top',
+                card2_top: 'Card 2 Top',
+                uploaded_files: 'Uploaded Files',
+                download_pdf: 'Download PDF',
+                print: 'Print',
+                download_image: 'Download Image',
+                reset: 'Reset',
+                preview_title: 'Preview',
+                no_file: 'No PDF uploaded yet',
+                upload_first: 'Please upload a PDF file first',
+                footer_copyright: '© 2026 NID Card Pro - All Rights Reserved',
+                success_upload: 'PDF loaded successfully!',
+                error_upload: 'Error loading PDF file!',
+                invalid_file: 'Invalid file! Only PDF files are supported',
+                pdf_required: 'Please upload a PDF file first',
+                download_success: 'Download successful!',
+                print_success: 'Print started!',
+                reset_success: 'Everything has been reset!',
+                file_limit: 'Maximum 2 files supported'
+            }
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-
+        // ========== GLOBAL VARIABLES ==========
+        let pdfDocs = [];
         let currentLanguage = 'bn';
-        let isOnline = true;
+        let topFirst = true;
+        let currentZoom = 1;
+        let uploadedFiles = [];
 
-        // Language Functions
-        function setLanguage(lang) {
+        // PDF.js Worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide loader after 2 seconds
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 2000);
+            
+            // Initialize
+            initialize();
+        });
+
+        function initialize() {
+            // Set default language
+            switchLanguage('bn');
+            
+            // Set default position
+            setTopFirst(true);
+            
+            // Set default zoom
+            applyZoom();
+            
+            // Toast initialization
+            initToast();
+        }
+
+        // ========== LANGUAGE SWITCH ==========
+        function switchLanguage(lang) {
             currentLanguage = lang;
             
-            document.getElementById('bnBtn').classList.toggle('active', lang === 'bn');
-            document.getElementById('enBtn').classList.toggle('active', lang === 'en');
-            
-            document.querySelectorAll('[data-en][data-bn]').forEach(element => {
-                element.textContent = element.getAttribute(`data-${lang}`);
+            // Update all text elements
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
             });
             
-            updateConnectionStatus();
-            localStorage.setItem('language', lang);
-        }
-
-        // Connection Status
-        function updateConnectionStatus() {
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-            const connectionStatus = document.getElementById('connectionStatus');
-            const offlineBanner = document.getElementById('offlineBanner');
-            const offlineBannerRegister = document.getElementById('offlineBannerRegister');
-            
-            isOnline = navigator.onLine;
-            
-            if (isOnline) {
-                statusDot.className = 'status-dot online';
-                connectionStatus.className = 'connection-status online';
-                statusText.textContent = currentLanguage === 'bn' ? 'অনলাইন' : 'Online';
-                offlineBanner.classList.remove('show');
-                if (offlineBannerRegister) offlineBannerRegister.classList.remove('show');
-            } else {
-                statusDot.className = 'status-dot offline';
-                connectionStatus.className = 'connection-status offline';
-                statusText.textContent = currentLanguage === 'bn' ? 'অফলাইন' : 'Offline';
-                offlineBanner.classList.add('show');
-                if (offlineBannerRegister) offlineBannerRegister.classList.add('show');
-            }
-        }
-
-        // Listen for online/offline events
-        window.addEventListener('online', () => {
-            updateConnectionStatus();
-            showNotification(
-                currentLanguage === 'bn' ? 'অনলাইন' : 'Online',
-                currentLanguage === 'bn' ? 'আপনি এখন অনলাইনে আছেন' : 'You are now online',
-                'success'
-            );
-            // Sync offline data
-            syncOfflineData();
-        });
-
-        window.addEventListener('offline', () => {
-            updateConnectionStatus();
-            showNotification(
-                currentLanguage === 'bn' ? 'অফলাইন' : 'Offline',
-                currentLanguage === 'bn' ? 'আপনি এখন অফলাইনে আছেন' : 'You are now offline',
-                'warning'
-            );
-        });
-
-        // Show/Hide Sections
-        function showLogin() {
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('registerSection').style.display = 'none';
-            document.getElementById('forgotPasswordSection').style.display = 'none';
-        }
-
-        function showRegister() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('registerSection').style.display = 'block';
-            document.getElementById('forgotPasswordSection').style.display = 'none';
-        }
-
-        function showForgotPassword() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('registerSection').style.display = 'none';
-            document.getElementById('forgotPasswordSection').style.display = 'block';
-        }
-
-        // Toggle Password Visibility
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            const icon = input.parentElement.querySelector('.password-toggle i');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        // Notification System
-        function showNotification(title, message, type = 'info') {
-            const container = document.getElementById('notificationContainer');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                warning: 'fa-exclamation-triangle',
-                info: 'fa-info-circle'
-            };
-            
-            notification.innerHTML = `
-                <div class="notification-icon">
-                    <i class="fas ${icons[type]}"></i>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title">${title}</div>
-                    <div class="notification-message">${message}</div>
-                </div>
-                <button class="notification-close" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            container.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.classList.add('slide-out');
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 300);
-                }
-            }, 5000);
-        }
-
-        // Error message mapping
-        function getErrorMessage(error) {
-            const errorMessages = {
-                'auth/invalid-email': {
-                    bn: { title: 'ভুল ইমেইল', message: 'আপনি একটি ভুল ইমেইল ঠিকানা দিয়েছেন' },
-                    en: { title: 'Invalid Email', message: 'You entered an invalid email address' }
-                },
-                'auth/user-disabled': {
-                    bn: { title: 'অ্যাকাউন্ট নিষ্ক্রিয়', message: 'আপনার অ্যাকাউন্ট নিষ্ক্রিয় করা হয়েছে' },
-                    en: { title: 'Account Disabled', message: 'Your account has been disabled' }
-                },
-                'auth/user-not-found': {
-                    bn: { title: 'ইউজার পাওয়া যায়নি', message: 'এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট নেই' },
-                    en: { title: 'User Not Found', message: 'No account found with this email' }
-                },
-                'auth/wrong-password': {
-                    bn: { title: 'ভুল পাসওয়ার্ড', message: 'আপনি ভুল পাসওয়ার্ড দিয়েছেন' },
-                    en: { title: 'Wrong Password', message: 'You entered an incorrect password' }
-                },
-                'auth/email-already-in-use': {
-                    bn: { title: 'ইমেইল ব্যবহৃত', message: 'এই ইমেইল দিয়ে ইতিমধ্যে অ্যাকাউন্ট আছে' },
-                    en: { title: 'Email Already Used', message: 'An account already exists with this email' }
-                },
-                'auth/weak-password': {
-                    bn: { title: 'দুর্বল পাসওয়ার্ড', message: 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে' },
-                    en: { title: 'Weak Password', message: 'Password must be at least 6 characters' }
-                },
-                'auth/network-request-failed': {
-                    bn: { title: 'নেটওয়ার্ক সমস্যা', message: 'ইন্টারনেট সংযোগ পরীক্ষা করুন' },
-                    en: { title: 'Network Error', message: 'Please check your internet connection' }
-                },
-                'auth/too-many-requests': {
-                    bn: { title: 'অনেক চেষ্টা', message: 'অনেকবার চেষ্টা করেছেন, কিছুক্ষণ পর আবার চেষ্টা করুন' },
-                    en: { title: 'Too Many Attempts', message: 'Too many attempts, please try again later' }
-                }
-            };
-            
-            const defaultError = {
-                bn: { title: 'ত্রুটি', message: 'কিছু ভুল হয়েছে, আবার চেষ্টা করুন' },
-                en: { title: 'Error', message: 'Something went wrong, please try again' }
-            };
-            
-            const errorInfo = errorMessages[error.code] || defaultError;
-            return errorInfo[currentLanguage] || errorInfo.bn;
-        }
-
-        // Offline Login
-        function offlineLogin(email, password) {
-            const users = JSON.parse(localStorage.getItem('offlineUsers') || '[]');
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                return user;
-            }
-            return null;
-        }
-
-        // Save user for offline
-        function saveUserForOffline(userData) {
-            const users = JSON.parse(localStorage.getItem('offlineUsers') || '[]');
-            const existingIndex = users.findIndex(u => u.email === userData.email);
-            
-            if (existingIndex >= 0) {
-                users[existingIndex] = userData;
-            } else {
-                users.push(userData);
-            }
-            
-            localStorage.setItem('offlineUsers', JSON.stringify(users));
-        }
-
-        // Login
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
-            const loginBtn = document.getElementById('loginBtn');
-            
-            // Show loading
-            loginBtn.classList.add('loading');
-            loginBtn.disabled = true;
-            
-            if (navigator.onLine) {
-                // Online login
-                try {
-                    if (rememberMe) {
-                        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-                    } else {
-                        await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-                    }
-                    
-                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                    const user = userCredential.user;
-                    
-                    const userSnapshot = await database.ref('users/' + user.uid).once('value');
-                    const userData = userSnapshot.val();
-                    
-                    if (!userData) {
-                        throw new Error('User data not found');
-                    }
-                    
-                    await database.ref('users/' + user.uid + '/lastLogin').set(firebase.database.ServerValue.TIMESTAMP);
-                    
-                    const userInfo = {
-                        uid: user.uid,
-                        email: user.email,
-                        name: userData.name || user.email.split('@')[0],
-                        businessName: userData.businessName || '',
-                        mobileNumber: userData.mobileNumber || '',
-                        role: userData.role || 'user',
-                        password: password
-                    };
-                    
-                    localStorage.setItem('userData', JSON.stringify(userInfo));
-                    
-                    // Save for offline
-                    if (rememberMe) {
-                        saveUserForOffline(userInfo);
-                    }
-                    
-                    showNotification(
-                        currentLanguage === 'bn' ? 'সফল' : 'Success',
-                        currentLanguage === 'bn' ? 'লগইন সফল হয়েছে!' : 'Login successful!',
-                        'success'
-                    );
-                    
-                    setTimeout(() => {
-                        if (userData.role === 'admin') {
-                            window.location.href = 'admin-dashboard.html';
-                        } else {
-                            window.location.href = 'user-dashboard.html';
-                        }
-                    }, 1000);
-                    
-                } catch (error) {
-                    console.error('Login error:', error);
-                    const errorInfo = getErrorMessage(error);
-                    showNotification(errorInfo.title, errorInfo.message, 'error');
-                } finally {
-                    loginBtn.classList.remove('loading');
-                    loginBtn.disabled = false;
-                }
-            } else {
-                // Offline login
-                const user = offlineLogin(email, password);
-                
-                if (user) {
-                    localStorage.setItem('userData', JSON.stringify(user));
-                    
-                    showNotification(
-                        currentLanguage === 'bn' ? 'অফলাইন লগইন' : 'Offline Login',
-                        currentLanguage === 'bn' ? 'অফলাইন মোডে লগইন সফল হয়েছে!' : 'Login successful in offline mode!',
-                        'success'
-                    );
-                    
-                    setTimeout(() => {
-                        if (user.role === 'admin') {
-                            window.location.href = 'admin-dashboard.html';
-                        } else {
-                            window.location.href = 'user-dashboard.html';
-                        }
-                    }, 1000);
+            // Update navbar language buttons
+            document.querySelectorAll('.btn-language').forEach(btn => {
+                if (btn.textContent.includes('বাংলা')) {
+                    btn.classList.toggle('active', lang === 'bn');
                 } else {
-                    showNotification(
-                        currentLanguage === 'bn' ? 'লগইন ব্যর্থ' : 'Login Failed',
-                        currentLanguage === 'bn' ? 'অফলাইনে লগইন করতে আগে একবার অনলাইনে লগইন করতে হবে' : 'You need to login online first to enable offline login',
-                        'error'
-                    );
-                    loginBtn.classList.remove('loading');
-                    loginBtn.disabled = false;
+                    btn.classList.toggle('active', lang === 'en');
                 }
-            }
+            });
+        }
+
+        // ========== FILE UPLOAD ==========
+        document.getElementById('pdfInput').addEventListener('change', handleFileUpload);
+
+        const uploadZone = document.getElementById('uploadZone');
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
         });
 
-        // Register
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
             e.preventDefault();
+            uploadZone.classList.remove('dragover');
             
-            const name = document.getElementById('registerName').value;
-            const businessName = document.getElementById('businessName').value;
-            const mobileNumber = document.getElementById('mobileNumber').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const registerBtn = document.getElementById('registerBtn');
+            const files = e.dataTransfer.files;
+            processFiles(files);
+        });
+
+        async function handleFileUpload(e) {
+            const files = e.target.files;
+            processFiles(files);
+        }
+
+        async function processFiles(files) {
+            const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
             
-            // Check if online
-            if (!navigator.onLine) {
-                showNotification(
-                    currentLanguage === 'bn' ? 'অফলাইন' : 'Offline',
-                    currentLanguage === 'bn' ? 'রেজিষ্ট্রেশনের জন্য ইন্টারনেট সংযোগ প্রয়োজন' : 'Registration requires internet connection',
-                    'warning'
-                );
+            if (pdfFiles.length === 0) {
+                showToast(translations[currentLanguage].invalid_file, 'error');
                 return;
             }
             
-            // Validate passwords
-            if (password !== confirmPassword) {
-                showNotification(
-                    currentLanguage === 'bn' ? 'পাসওয়ার্ড মিলছে না' : 'Password Mismatch',
-                    currentLanguage === 'bn' ? 'দুটি পাসওয়ার্ড একই নয়' : 'The two passwords do not match',
-                    'warning'
-                );
-                return;
+            if (pdfFiles.length > 2) {
+                showToast(translations[currentLanguage].file_limit, 'warning');
+                pdfFiles = pdfFiles.slice(0, 2);
             }
             
-            if (password.length < 6) {
-                showNotification(
-                    currentLanguage === 'bn' ? 'দুর্বল পাসওয়ার্ড' : 'Weak Password',
-                    currentLanguage === 'bn' ? 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে' : 'Password must be at least 6 characters',
-                    'warning'
-                );
-                return;
-            }
+            // Clear previous
+            pdfDocs = [];
+            uploadedFiles = [];
+            document.getElementById('fileList').innerHTML = '';
             
-            if (!/^01[0-9]{9}$/.test(mobileNumber)) {
-                showNotification(
-                    currentLanguage === 'bn' ? 'ভুল মোবাইল নম্বর' : 'Invalid Mobile',
-                    currentLanguage === 'bn' ? 'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)' : 'Please enter a valid mobile number (01XXXXXXXXX)',
-                    'warning'
-                );
-                return;
-            }
+            // Show upload status
+            document.getElementById('uploadStatus').classList.remove('d-none');
             
-            registerBtn.classList.add('loading');
-            registerBtn.disabled = true;
+            // Progress bar
+            const progressBar = document.getElementById('uploadProgress');
+            progressBar.style.width = '0%';
             
             try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                
-                await user.updateProfile({
-                    displayName: name
-                });
-                
-                const userData = {
-                    name: name,
-                    businessName: businessName || '',
-                    mobileNumber: mobileNumber,
-                    email: email,
-                    role: 'user',
-                    createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    lastLogin: firebase.database.ServerValue.TIMESTAMP,
-                    profilePic: '',
-                    settings: {
-                        currency: 'BDT',
-                        language: currentLanguage,
-                        theme: 'light'
-                    }
-                };
-                
-                await database.ref('users/' + user.uid).set(userData);
-                
-                const userInfo = {
-                    uid: user.uid,
-                    email: user.email,
-                    name: name,
-                    businessName: businessName,
-                    mobileNumber: mobileNumber,
-                    role: 'user',
-                    password: password
-                };
-                
-                localStorage.setItem('userData', JSON.stringify(userInfo));
-                
-                // Save for offline
-                saveUserForOffline(userInfo);
-                
-                showNotification(
-                    currentLanguage === 'bn' ? 'সফল' : 'Success',
-                    currentLanguage === 'bn' ? 'রেজিষ্ট্রেশন সফল হয়েছে!' : 'Registration successful!',
-                    'success'
-                );
-                
-                setTimeout(() => {
-                    showLogin();
-                    document.getElementById('loginEmail').value = email;
-                    document.getElementById('loginPassword').focus();
+                for (let i = 0; i < pdfFiles.length; i++) {
+                    const file = pdfFiles[i];
                     
-                    showNotification(
-                        currentLanguage === 'bn' ? 'লগইন করুন' : 'Please Login',
-                        currentLanguage === 'bn' ? 'এখন আপনার অ্যাকাউন্টে লগইন করুন' : 'Now login to your account',
-                        'info'
-                    );
-                }, 1500);
+                    // Add to uploaded files list
+                    uploadedFiles.push(file.name);
+                    addFileToList(file.name, file.size);
+                    
+                    // Update progress
+                    progressBar.style.width = `${((i + 1) / pdfFiles.length) * 100}%`;
+                    
+                    // Load PDF
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    pdfDocs.push(pdf);
+                }
+                
+                // Render PDFs
+                await renderPDFs();
+                
+                // Show preview
+                document.getElementById('noFileMessage').classList.add('d-none');
+                document.getElementById('previewContainer').classList.remove('d-none');
+                
+                // Enable buttons
+                document.getElementById('downloadPdfBtn').disabled = false;
+                document.getElementById('printBtn').disabled = false;
+                document.getElementById('downloadImgBtn').disabled = false;
+                
+                // Show success
+                setTimeout(() => {
+                    progressBar.style.width = '100%';
+                }, 500);
+                
+                showToast(translations[currentLanguage].success_upload, 'success');
                 
             } catch (error) {
-                console.error('Registration error:', error);
-                const errorInfo = getErrorMessage(error);
-                showNotification(errorInfo.title, errorInfo.message, 'error');
-            } finally {
-                registerBtn.classList.remove('loading');
-                registerBtn.disabled = false;
-            }
-        });
-
-        // Sync offline data
-        function syncOfflineData() {
-            const pendingTransactions = JSON.parse(localStorage.getItem('pendingTransactions') || '[]');
-            
-            if (pendingTransactions.length > 0 && currentUser) {
-                pendingTransactions.forEach(async (transaction) => {
-                    try {
-                        await database.ref('transactions/' + currentUser.uid).push(transaction);
-                    } catch (error) {
-                        console.error('Sync error:', error);
-                    }
-                });
-                
-                localStorage.removeItem('pendingTransactions');
-                showNotification(
-                    currentLanguage === 'bn' ? 'ডেটা সিঙ্ক' : 'Data Sync',
-                    currentLanguage === 'bn' ? 'অফলাইন ডেটা সফলভাবে সিঙ্ক হয়েছে' : 'Offline data synced successfully',
-                    'success'
-                );
+                console.error('Error loading PDF:', error);
+                showToast(translations[currentLanguage].error_upload, 'error');
             }
         }
 
-        // Check if user is already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                const localData = localStorage.getItem('userData');
-                if (localData) {
-                    const userData = JSON.parse(localData);
-                    if (userData.role === 'admin') {
-                        window.location.href = 'admin-dashboard.html';
+        function addFileToList(fileName, fileSize) {
+            const fileList = document.getElementById('fileList');
+            
+            const div = document.createElement('div');
+            div.className = 'd-flex align-items-center justify-content-between p-2 border rounded mb-2';
+            div.innerHTML = `
+                <div>
+                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                    <span class="small">${fileName}</span>
+                    <span class="text-muted small ms-2">(${(fileSize / 1024).toFixed(2)} KB)</span>
+                </div>
+                <i class="fas fa-check-circle text-success"></i>
+            `;
+            
+            fileList.appendChild(div);
+        }
+
+        // ========== RENDER PDFS ==========
+        async function renderPDFs() {
+            if (pdfDocs.length === 1) {
+                // If only one PDF, use first two pages
+                await renderPage(1, 'pdfCanvas1', pdfDocs[0]);
+                await renderPage(2, 'pdfCanvas2', pdfDocs[0]);
+            } else if (pdfDocs.length >= 2) {
+                // If two PDFs, use first page of each
+                await renderPage(1, 'pdfCanvas1', pdfDocs[0]);
+                await renderPage(1, 'pdfCanvas2', pdfDocs[1]);
+            }
+            
+            // Apply position
+            setTopFirst(topFirst);
+        }
+
+        async function renderPage(pageNum, canvasId, pdfDoc) {
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 3 }); // HD quality (3x)
+            
+            const canvas = document.getElementById(canvasId);
+            const context = canvas.getContext('2d');
+            
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            
+            // Clear canvas
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Render page
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+        }
+
+        // ========== CARD POSITION ==========
+        function setTopFirst(value) {
+            topFirst = value;
+            
+            const card1 = document.getElementById('card1');
+            const card2 = document.getElementById('card2');
+            
+            const btn1 = document.getElementById('topFirstBtn');
+            const btn2 = document.getElementById('bottomFirstBtn');
+            
+            if (topFirst) {
+                card1.classList.remove('mt-4');
+                card2.classList.add('mt-4');
+                
+                btn1.classList.add('active');
+                btn2.classList.remove('active');
+                
+                // Animation
+                card1.style.animation = 'none';
+                card1.offsetHeight;
+                card1.style.animation = 'slideInUp 0.5s ease';
+            } else {
+                card1.classList.add('mt-4');
+                card2.classList.remove('mt-4');
+                
+                btn1.classList.remove('active');
+                btn2.classList.add('active');
+                
+                // Animation
+                card2.style.animation = 'none';
+                card2.offsetHeight;
+                card2.style.animation = 'slideInUp 0.5s ease';
+            }
+        }
+
+        // ========== ZOOM CONTROLS ==========
+        function zoomIn() {
+            currentZoom = Math.min(2, currentZoom + 0.1);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.5, currentZoom - 0.1);
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const a4Page = document.getElementById('a4Page');
+            a4Page.style.transform = `scale(${currentZoom})`;
+            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+        }
+
+        // ========== DOWNLOAD PDF ==========
+        async function downloadPDF() {
+            if (pdfDocs.length === 0) {
+                showToast(translations[currentLanguage].pdf_required, 'warning');
+                return;
+            }
+            
+            showLoader();
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                // Add background
+                doc.setFillColor(248, 250, 252);
+                doc.rect(0, 0, 210, 297, 'F');
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(37, 99, 235);
+                doc.text('NID Card Document', 105, 20, { align: 'center' });
+                
+                // Add decorative line
+                doc.setDrawColor(37, 99, 235);
+                doc.setLineWidth(1);
+                doc.line(30, 25, 180, 25);
+                
+                // Add cards
+                if (topFirst) {
+                    if (pdfDocs.length === 1) {
+                        await addCardToPDF(doc, pdfDocs[0], 1, 35);
+                        await addCardToPDF(doc, pdfDocs[0], 2, 140);
                     } else {
-                        window.location.href = 'user-dashboard.html';
+                        await addCardToPDF(doc, pdfDocs[0], 1, 35);
+                        await addCardToPDF(doc, pdfDocs[1], 1, 140);
+                    }
+                } else {
+                    if (pdfDocs.length === 1) {
+                        await addCardToPDF(doc, pdfDocs[0], 2, 35);
+                        await addCardToPDF(doc, pdfDocs[0], 1, 140);
+                    } else {
+                        await addCardToPDF(doc, pdfDocs[1], 1, 35);
+                        await addCardToPDF(doc, pdfDocs[0], 1, 140);
                     }
                 }
+                
+                // Save
+                doc.save('nid-cards.pdf');
+                showToast(translations[currentLanguage].download_success, 'success');
+                
+            } catch (error) {
+                console.error('Error downloading PDF:', error);
+                showToast('Error downloading PDF!', 'error');
             }
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('language') || 'bn';
-            setLanguage(savedLang);
-            updateConnectionStatus();
             
-            const localData = localStorage.getItem('userData');
-            if (localData) {
-                const userData = JSON.parse(localData);
-                if (userData.email) {
-                    document.getElementById('loginEmail').value = userData.email;
-                    document.getElementById('rememberMe').checked = true;
-                }
+            hideLoader();
+        }
+
+        async function addCardToPDF(doc, pdf, pageNum, yOffset) {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 2 });
+            
+            // Calculate dimensions
+            const maxWidth = 170;
+            const maxHeight = 110;
+            
+            const ratio = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
+            const width = viewport.width * ratio;
+            const height = viewport.height * ratio;
+            
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width * ratio * 2;
+            canvas.height = viewport.height * ratio * 2;
+            
+            const context = canvas.getContext('2d');
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+            
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            
+            // Add image to PDF
+            doc.addImage(imgData, 'JPEG', 20, yOffset, width, height);
+            
+            // Add border
+            doc.setDrawColor(203, 213, 225);
+            doc.setLineWidth(0.5);
+            doc.roundedRect(20, yOffset, width, height, 5, 5);
+        }
+
+        // ========== PRINT ==========
+        function printPDF() {
+            if (pdfDocs.length === 0) {
+                showToast(translations[currentLanguage].pdf_required, 'warning');
+                return;
             }
-        });
+            
+            showToast(translations[currentLanguage].print_success, 'success');
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
+
+        // ========== DOWNLOAD IMAGE ==========
+        async function downloadImage() {
+            if (pdfDocs.length === 0) {
+                showToast(translations[currentLanguage].pdf_required, 'warning');
+                return;
+            }
+            
+            showLoader();
+            
+            try {
+                const a4Page = document.getElementById('a4Page');
+                const format = document.getElementById('imageFormat').value;
+                
+                // Remove transform for proper rendering
+                const originalTransform = a4Page.style.transform;
+                a4Page.style.transform = 'none';
+                
+                const canvas = await html2canvas(a4Page, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        const clonedElement = clonedDoc.getElementById('a4Page');
+                        clonedElement.style.transform = 'none';
+                    }
+                });
+                
+                // Restore transform
+                a4Page.style.transform = originalTransform;
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `nid-cards.${format}`;
+                link.href = canvas.toDataURL(`image/${format}`, 1.0);
+                link.click();
+                
+                showToast(translations[currentLanguage].download_success, 'success');
+                
+            } catch (error) {
+                console.error('Error downloading image:', error);
+                showToast('Error downloading image!', 'error');
+            }
+            
+            hideLoader();
+        }
+
+        // ========== RESET ==========
+        function resetAll() {
+            // Clear uploaded files
+            pdfDocs = [];
+            uploadedFiles = [];
+            document.getElementById('pdfInput').value = '';
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('uploadStatus').classList.add('d-none');
+            document.getElementById('uploadProgress').style.width = '0%';
+            
+            // Hide preview
+            document.getElementById('noFileMessage').classList.remove('d-none');
+            document.getElementById('previewContainer').classList.add('d-none');
+            
+            // Disable buttons
+            document.getElementById('downloadPdfBtn').disabled = true;
+            document.getElementById('printBtn').disabled = true;
+            document.getElementById('downloadImgBtn').disabled = true;
+            
+            // Reset zoom
+            currentZoom = 1;
+            applyZoom();
+            
+            // Reset position
+            setTopFirst(true);
+            
+            // Show toast
+            showToast(translations[currentLanguage].reset_success, 'success');
+        }
+
+        // ========== TOAST NOTIFICATIONS ==========
+        let toastTimeout;
+
+        function initToast() {
+            // Toast is already in HTML
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+            
+            // Set icon
+            icon.innerHTML = type === 'success' ? '<i class="fas fa-check"></i>' :
+                            type === 'error' ? '<i class="fas fa-times"></i>' :
+                            '<i class="fas fa-exclamation"></i>';
+            
+            // Set message
+            msg.textContent = message;
+            
+            // Set toast class
+            toast.className = `toast-custom toast-${type}`;
+            
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            // Auto hide after 4 seconds
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // ========== LOADER ==========
+        function showLoader() {
+            document.getElementById('loader').classList.remove('hidden');
+        }
+
+        function hideLoader() {
+            document.getElementById('loader').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
-    
