@@ -2,35 +2,44 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>NID Card Pro - Professional PDF Processor</title>
-    <meta name="description" content="Professional NID Card PDF processor with HD quality">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NID Card Pro - Premium Edition</title>
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <!-- Cropper.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #7c3aed;
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
             --success: #10b981;
-            --warning: #f59e0b;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --dark: #1e293b;
-            --light: #f8fafc;
+            --gray: #64748b;
             --border: #e2e8f0;
+            --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --gradient-success: linear-gradient(135deg, #10b981, #059669);
+            --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
-            --shadow-lg: 0 8px 40px rgba(0,0,0,0.15);
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-light: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.2);
         }
 
         * {
@@ -40,127 +49,133 @@
         }
 
         body {
-            font-family: 'Poppins', 'Hind Siliguri', sans-serif;
-            background: linear-gradient(45deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        /* Loading Screen */
-        .loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.98);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: all 0.5s ease;
+        .app {
+            max-width: 520px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #f8fafc;
+            box-shadow: 0 0 50px rgba(0,0,0,0.2);
         }
 
-        .loader.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .loader-content {
-            text-align: center;
-        }
-
-        .loader-ring {
-            width: 60px;
-            height: 60px;
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Navbar */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            padding: 15px 0;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .navbar-brand i {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2rem;
-        }
-
-        .btn-language {
-            border-radius: 50px;
-            padding: 8px 20px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-language:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        /* Main Container */
-        .main-container {
-            padding-top: 100px;
-            padding-bottom: 50px;
-        }
-
-        /* Cards */
-        .card-custom {
-            border: none;
-            border-radius: 20px;
-            background: white;
-            box-shadow: var(--shadow-lg);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .card-custom:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 50px rgba(0,0,0,0.15);
-        }
-
-        .card-header-custom {
+        /* Header 
+        .header {
             background: var(--gradient);
             color: white;
             padding: 20px;
-            border-radius: 20px 20px 0 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-sub {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }  */
+
+        /* Steps */
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step-ind {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.7rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .step-ind:hover {
+            color: var(--primary);
+        }
+
+        .step-ind.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .step-ind.completed {
+            color: var(--success);
+        }
+
+        .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e2e8f0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
-        .card-header-custom i {
-            font-size: 1.5rem;
+        .step-ind.active .step-num {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            animation: pulse 2s infinite;
         }
 
-        .card-body-custom {
-            padding: 25px;
+        .step-ind.completed .step-num {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+            padding: 20px;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Upload Zone */
@@ -170,8 +185,8 @@
             padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.4s ease;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            transition: all 0.4s;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
             position: relative;
             overflow: hidden;
         }
@@ -184,7 +199,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-            transition: all 0.5s ease;
+            transition: all 0.5s;
         }
 
         .upload-zone:hover::before {
@@ -192,47 +207,46 @@
         }
 
         .upload-zone:hover {
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
             border-color: var(--secondary);
             transform: scale(1.02);
-        }
-
-        .upload-zone.dragover {
-            border-color: var(--success);
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
         }
 
         .upload-icon {
-            font-size: 4rem;
+            font-size: 3.5rem;
             background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
         }
 
-        .upload-zone:hover .upload-icon {
-            transform: scale(1.1) rotate(10deg);
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         /* Buttons */
-        .btn-custom {
+        .btn-main {
+            width: 100%;
+            padding: 14px;
             border-radius: 12px;
-            padding: 12px 24px;
+            border: none;
             font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 10px;
             position: relative;
             overflow: hidden;
-            letter-spacing: 0.5px;
         }
 
-        .btn-custom::after {
+        .btn-main::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -245,1158 +259,1079 @@
             transition: width 0.6s, height 0.6s;
         }
 
-        .btn-custom:hover::after {
+        .btn-main:hover::after {
             width: 300px;
             height: 300px;
         }
 
-        .btn-custom:hover {
+        .btn-main:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        }
-
-        .btn-custom:active {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .btn-primary-gradient {
-            background: var(--gradient);
-            color: white;
-            border: none;
-        }
-
-        .btn-success-gradient {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-warning-gradient {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-danger-gradient {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            border: none;
-        }
-
-        /* Toggle Switch */
-        .toggle-group {
-            background: #f1f5f9;
-            border-radius: 15px;
-            padding: 5px;
-            display: flex;
-            gap: 5px;
-        }
-
-        .toggle-btn {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            color: #64748b;
-        }
-
-        .toggle-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .toggle-btn:hover {
-            color: var(--primary);
-        }
-
-        /* Preview Area */
-        .preview-container {
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 20px;
-            border: 2px solid var(--border);
-        }
-
-        /* A4 Page */
-        .a4-page {
-            width: 210mm;
-            min-height: 297mm;
-            background: white;
-            margin: 0 auto;
-            padding: 10mm;
-            box-shadow: 0 0 40px rgba(0,0,0,0.2);
-            border-radius: 10px;
-            position: relative;
-            transition: all 0.5s ease;
-        }
-
-        .a4-page::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: var(--gradient);
-            border-radius: 10px 10px 0 0;
-        }
-
-        /* NID Card */
-        .nid-card-wrapper {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            cursor: grab;
-        }
-
-        .nid-card-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient);
-        }
-
-        .nid-card-wrapper:hover {
-            transform: translateY(-5px) scale(1.02);
             box-shadow: 0 8px 30px rgba(0,0,0,0.2);
         }
 
-        .nid-card-wrapper:active {
-            cursor: grabbing;
-            transform: scale(0.98);
+        .btn-main:active {
+            transform: translateY(-1px);
         }
 
-        .nid-card-wrapper canvas {
-            width: 100% !important;
-            height: auto !important;
-            display: block;
-            border-radius: 0 0 12px 12px;
-        }
-
-        /* Zoom Controls */
-        .zoom-controls {
-            background: white;
-            border-radius: 50px;
-            padding: 5px;
-            box-shadow: var(--shadow-md);
-            display: inline-flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .zoom-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: #f1f5f9;
-            transition: all 0.3s ease;
-            font-weight: bold;
-        }
-
-        .zoom-btn:hover {
-            background: var(--primary);
+        .btn-primary {
+            background: var(--gradient);
             color: white;
-            transform: scale(1.1);
         }
 
-        .zoom-level {
-            padding: 5px 15px;
-            font-weight: 600;
+        .btn-primary:hover {
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: var(--gradient-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-warning {
+            background: var(--gradient-warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-back {
+            background: #f1f5f9;
             color: var(--dark);
-            min-width: 60px;
-            text-align: center;
+            border: 1px solid var(--border);
         }
 
-        /* Toast */
-        .toast-custom {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 9999;
+        .btn-back:hover {
+            background: #e2e8f0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-buttons .btn-main {
+            flex: 1;
+        }
+
+        /* Canvas */
+        .canvas-wrap {
             background: white;
-            border-radius: 15px;
-            box-shadow: var(--shadow-lg);
-            padding: 15px 20px;
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            overflow: auto;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .canvas-wrap:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        #pdf-canvas {
+            max-width: 100%;
+            border-radius: 12px;
+            background: white;
+        }
+
+        /* Preview */
+        .preview-box {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-top: 10px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .preview-box:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .preview-label {
+            font-size: 0.75rem;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-box img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* Customization */
+        .custom-box {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .custom-box:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .custom-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            transform: translateX(300px);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
         }
 
-        .toast-custom.show {
-            transform: translateX(0);
-        }
-
-        .toast-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
+        .custom-header i {
+            color: var(--primary);
             font-size: 1.2rem;
         }
 
-        .toast-success .toast-icon {
-            background: var(--success);
+        .custom-header h6 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
         }
 
-        .toast-error .toast-icon {
-            background: var(--danger);
+        .custom-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
-        .toast-warning .toast-icon {
-            background: var(--warning);
+        .custom-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            min-width: 70px;
+            font-weight: 500;
         }
 
-        /* Animation Classes */
-        .animate-in {
-            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            transition: all 0.3s;
         }
 
-        @keyframes slideInUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--gradient);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
         }
 
-        .animate-fade-in {
-            animation: fadeIn 0.8s ease;
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .value {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 50px;
+            text-align: center;
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 8px;
         }
 
-        .float-animation {
-            animation: float 3s ease-in-out infinite;
+        .move-btns {
+            display: flex;
+            gap: 8px;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .move-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: none;
+            background: #f1f5f9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s;
         }
 
-        /* Modal */
-        .modal-custom {
+        .move-btn:hover {
+            background: var(--gradient);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Final Canvas */
+        .final-wrap {
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            overflow: auto;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+        }
+
+        #final-canvas {
+            max-width: 100%;
+            border-radius: 12px;
+            background: white;
+        }
+
+        /* Toast - Premium */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            min-width: 280px;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .toast.success .toast-icon {
+            background: var(--gradient-success);
+        }
+
+        .toast.error .toast-icon {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .toast.warning .toast-icon {
+            background: var(--gradient-warning);
+        }
+
+        .toast-msg {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        /* Loader - Premium */
+        .loader {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            z-index: 10000;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(5px);
+            z-index: 99999;
             justify-content: center;
             align-items: center;
         }
 
-        .modal-custom.show {
+        .loader.show {
             display: flex;
         }
 
-        .modal-content-custom {
+        .loader-box {
             background: white;
+            padding: 30px 40px;
             border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            transform: scale(0.7);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
         }
 
-        .modal-custom.show .modal-content-custom {
-            transform: scale(1);
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #e2e8f0;
+            border-top-color: var(--primary);
+            border-right-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
         }
 
-        /* Progress Bar */
-        .progress-bar-custom {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 20px 0;
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--gradient);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            width: 0%;
+        .loader-text {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Print */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            
+            body * {
+                visibility: hidden;
+            }
+            
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+            
+            #print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+            
+            #print-area img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
         }
 
         /* Responsive */
-        @media (max-width: 992px) {
-            .a4-page {
-                width: 100%;
-                min-height: auto;
-                padding: 5mm;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-container {
-                padding-top: 80px;
+        @media (max-width: 480px) {
+            .app {
+                max-width: 100%;
             }
             
-            .card-body-custom {
-                padding: 15px;
+            .steps {
+                gap: 10px;
+                padding: 10px;
             }
             
-            .btn-custom {
-                padding: 10px 20px;
-                font-size: 0.9rem;
+            .step-ind {
+                font-size: 0.65rem;
             }
             
-            .upload-zone {
-                padding: 25px 15px;
+            .step-num {
+                width: 25px;
+                height: 25px;
+                font-size: 0.7rem;
             }
-            
-            .upload-icon {
-                font-size: 3rem;
-            }
-            
-            .navbar-brand {
-                font-size: 1.2rem;
-            }
-            
-            .navbar-brand i {
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            .navbar, .no-print {
-                display: none !important;
-            }
-            
-            .a4-page {
-                box-shadow: none !important;
-                margin: 0 !important;
-                width: 100% !important;
-                min-height: 100vh !important;
-            }
-            
-            body {
-                background: white !important;
-            }
-            
-            .main-container {
-                padding: 0 !important;
-            }
-            
-            .card-custom {
-                box-shadow: none !important;
-            }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--gradient);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Selection */
-        ::selection {
-            background: var(--primary);
-            color: white;
         }
     </style>
 </head>
 <body>
 
-    <!-- Loader -->
-    <div class="loader" id="loader">
-        <div class="loader-content">
-            <div class="loader-ring"></div>
-            <h5 class="mt-3">Loading NID Card Pro...</h5>
-            <p class="text-muted">Please wait</p>
-        </div>
-    </div>
+    <div class="app">
+        <!-- Header 
+        <div class="header">
+            <h2><i class="fas fa-id-card-alt"></i> NID Card Pro</h2>
+            <div class="header-sub">Professional Card Processor</div>
+        </div>  -->
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-id-card-alt"></i>
-                <span>NID Card Pro</span>
-            </a>
+        <!-- Steps -->
+        <div class="steps">
+            <div class="step-ind active" id="s1">
+                <span class="step-num">1</span>
+                <span>আপলোড</span>
+            </div>
+            <div class="step-ind" id="s2">
+                <span class="step-num">2</span>
+                <span>ক্রপ</span>
+            </div>
+            <div class="step-ind" id="s3">
+                <span class="step-num">3</span>
+                <span>কাস্টমাইজ</span>
+            </div>
+            <div class="step-ind" id="s4">
+                <span class="step-num">4</span>
+                <span>ডাউনলোড</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Upload -->
+        <div class="step-content active" id="step1">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h5>ক্লিক করুন অথবা ড্র্যাগ করুন</h5>
+                <p class="text-muted">PDF, JPG, PNG, WEBP সাপোর্টেড</p>
+                <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.webp,.bmp,.gif" style="display:none;">
+            </div>
+        </div>
+
+        <!-- Step 2: Crop -->
+        <div class="step-content" id="step2">
+            <div class="canvas-wrap">
+                <canvas id="pdf-canvas"></canvas>
+            </div>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <div style="margin-top: 15px;">
+                <button class="btn-main btn-primary" onclick="cropImage('front')">
+                    <i class="fas fa-id-card"></i> ফ্রন্ট ক্রপ
+                </button>
+                <button class="btn-main btn-warning" onclick="cropImage('back')">
+                    <i class="fas fa-id-card"></i> ব্যাক ক্রপ
+                </button>
+            </div>
+
+            <div class="preview-box">
+                <div class="preview-label">ফ্রন্ট প্রিভিউ</div>
+                <img id="front-preview" style="display:none;">
+            </div>
+            <div class="preview-box">
+                <div class="preview-label">ব্যাক প্রিভিউ</div>
+                <img id="back-preview" style="display:none;">
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-main btn-back" onclick="goToStep(1)">
+                    <i class="fas fa-arrow-left"></i> পেছনে
+                </button>
+                <button class="btn-main btn-success" onclick="goToStep(3)">
+                    এগিয়ে যান <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Customize -->
+        <div class="step-content" id="step3">
+            <select class="form-select mb-3" id="paperSize" style="border-radius: 12px; padding: 12px;">
+                <option value="A4">A4 (210×297mm)</option>
+                <option value="4x6">4×6 ইঞ্চি</option>
+                <option value="PVC">PVC কার্ড</option>
+            </select>
+
+            <!-- Both Cards -->
+            <div class="custom-box">
+                <div class="custom-header">
+                    <i class="fas fa-object-group"></i>
+                    <h6>দুই কার্ড একসাথে</h6>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">সাইজ</span>
+                    <input type="range" id="bothSize" min="50" max="100" value="100" oninput="updateBoth()">
+                    <span class="value" id="bothSizeVal">100%</span>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">অপাসিটি</span>
+                    <input type="range" id="bothOpacity" min="50" max="100" value="100" oninput="updateBoth()">
+                    <span class="value" id="bothOpacityVal">100%</span>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">পজিশন</span>
+                    <div class="move-btns">
+                        <button class="move-btn" onclick="moveBoth('up')"><i class="fas fa-arrow-up"></i></button>
+                        <button class="move-btn" onclick="moveBoth('down')"><i class="fas fa-arrow-down"></i></button>
+                        <button class="move-btn" onclick="moveBoth('left')"><i class="fas fa-arrow-left"></i></button>
+                        <button class="move-btn" onclick="moveBoth('right')"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 1 -->
+            <div class="custom-box">
+                <div class="custom-header">
+                    <i class="fas fa-id-card text-primary"></i>
+                    <h6>কার্ড ১ (ফ্রন্ট)</h6>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">সাইজ</span>
+                    <input type="range" id="card1Size" min="50" max="100" value="100" oninput="updateCustom()">
+                    <span class="value" id="card1SizeVal">100%</span>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">অপাসিটি</span>
+                    <input type="range" id="card1Opacity" min="50" max="100" value="100" oninput="updateCustom()">
+                    <span class="value" id="card1OpacityVal">100%</span>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">পজিশন</span>
+                    <div class="move-btns">
+                        <button class="move-btn" onclick="moveCard(1,'up')"><i class="fas fa-arrow-up"></i></button>
+                        <button class="move-btn" onclick="moveCard(1,'down')"><i class="fas fa-arrow-down"></i></button>
+                        <button class="move-btn" onclick="moveCard(1,'left')"><i class="fas fa-arrow-left"></i></button>
+                        <button class="move-btn" onclick="moveCard(1,'right')"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="custom-box">
+                <div class="custom-header">
+                    <i class="fas fa-id-card text-warning"></i>
+                    <h6>কার্ড ২ (ব্যাক)</h6>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">সাইজ</span>
+                    <input type="range" id="card2Size" min="50" max="100" value="100" oninput="updateCustom()">
+                    <span class="value" id="card2SizeVal">100%</span>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">অপাসিটি</span>
+                    <input type="range" id="card2Opacity" min="50" max="100" value="100" oninput="updateCustom()">
+                    <span class="value" id="card2OpacityVal">100%</span>
+                </div>
+                
+                <div class="custom-row">
+                    <span class="custom-label">পজিশন</span>
+                    <div class="move-btns">
+                        <button class="move-btn" onclick="moveCard(2,'up')"><i class="fas fa-arrow-up"></i></button>
+                        <button class="move-btn" onclick="moveCard(2,'down')"><i class="fas fa-arrow-down"></i></button>
+                        <button class="move-btn" onclick="moveCard(2,'left')"><i class="fas fa-arrow-left"></i></button>
+                        <button class="move-btn" onclick="moveCard(2,'right')"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Preview -->
+            <div class="final-wrap mt-3">
+                <canvas id="final-canvas" width="794" height="1123"></canvas>
+            </div>
+
+            <button class="btn-main btn-primary mt-3" onclick="placeCards()">
+                <i class="fas fa-th-large"></i> প্লেস করুন
+            </button>
+
+            <div class="nav-buttons">
+                <button class="btn-main btn-back" onclick="goToStep(2)">
+                    <i class="fas fa-arrow-left"></i> পেছনে
+                </button>
+                <button class="btn-main btn-success" onclick="goToStep(4)">
+                    এগিয়ে যান <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Download -->
+        <div class="step-content" id="step4">
+            <button class="btn-main btn-success" onclick="printCard()">
+                <i class="fas fa-print"></i> প্রিন্ট করুন
             </button>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item me-2">
-                        <button class="btn btn-language btn-primary-gradient" onclick="switchLanguage('bn')">
-                            <i class="fas fa-language me-1"></i>
-                            বাংলা
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="btn btn-language btn-primary-gradient" onclick="switchLanguage('en')">
-                            <i class="fas fa-language me-1"></i>
-                            English
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container main-container">
-        <div class="row">
-            <!-- Left Sidebar -->
-            <div class="col-lg-4 col-md-5 mb-4">
-                <div class="card-custom">
-                    <div class="card-header-custom">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <h5 class="mb-0" data-i18n="upload_title">PDF আপলোড করুন</h5>
-                    </div>
-                    
-                    <div class="card-body-custom">
-                        <!-- Upload Zone -->
-                        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('pdfInput').click()">
-                            <div class="upload-icon">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <h6 class="mb-2" data-i18n="upload_instruction">এখানে ক্লিক করুন অথবা PDF ড্র্যাগ করুন</h6>
-                            <p class="text-muted small mb-0" data-i18n="upload_hint">সর্বোচ্চ 2টি PDF ফাইল সাপোর্ট করা হয়</p>
-                            <input type="file" id="pdfInput" accept=".pdf" class="d-none" multiple>
-                        </div>
-                        
-                        <!-- Card Position Toggle -->
-                        <div class="mt-4">
-                            <label class="form-label fw-bold" data-i18n="card_position">কার্ড পজিশন</label>
-                            <div class="toggle-group">
-                                <button class="toggle-btn active" id="topFirstBtn" onclick="setTopFirst(true)">
-                                    <i class="fas fa-arrow-up me-1"></i>
-                                    <span data-i18n="card1_top">কার্ড ১ উপরে</span>
-                                </button>
-                                <button class="toggle-btn" id="bottomFirstBtn" onclick="setTopFirst(false)">
-                                    <i class="fas fa-arrow-down me-1"></i>
-                                    <span data-i18n="card2_top">কার্ড ২ উপরে</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Upload Status -->
-                        <div id="uploadStatus" class="mt-3 d-none">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <span class="fw-bold" data-i18n="uploaded_files">আপলোডকৃত ফাইল</span>
-                                <button class="btn btn-sm btn-danger" onclick="clearFiles()">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                            <div id="fileList"></div>
-                            <div class="progress-bar-custom mt-2">
-                                <div class="progress-bar-fill" id="uploadProgress"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="mt-4">
-                            <button class="btn btn-custom btn-success-gradient w-100 mb-2" onclick="downloadPDF()" id="downloadPdfBtn" disabled>
-                                <i class="fas fa-download me-2"></i>
-                                <span data-i18n="download_pdf">PDF ডাউনলোড</span>
-                            </button>
-                            
-                            <button class="btn btn-custom btn-primary-gradient w-100 mb-2" onclick="printPDF()" id="printBtn" disabled>
-                                <i class="fas fa-print me-2"></i>
-                                <span data-i18n="print">প্রিন্ট</span>
-                            </button>
-                            
-                            <div class="row g-2 mb-3">
-                                <div class="col-5">
-                                    <select class="form-select" id="imageFormat">
-                                        <option value="png">PNG</option>
-                                        <option value="jpeg">JPEG</option>
-                                        <option value="webp">WEBP</option>
-                                        <option value="svg">SVG</option>
-                                    </select>
-                                </div>
-                                <div class="col-7">
-                                    <button class="btn btn-custom btn-warning-gradient w-100" onclick="downloadImage()" id="downloadImgBtn" disabled>
-                                        <i class="fas fa-image me-1"></i>
-                                        <span data-i18n="download_image">ইমেজ ডাউনলোড</span>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <button class="btn btn-custom btn-danger-gradient w-100" onclick="resetAll()">
-                                <i class="fas fa-redo me-2"></i>
-                                <span data-i18n="reset">রিসেট</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <button class="btn-main btn-primary" onclick="downloadAs('png')">
+                <i class="fas fa-file-image"></i> PNG ডাউনলোড
+            </button>
             
-            <!-- Right Preview -->
-            <div class="col-lg-8 col-md-7">
-                <div class="card-custom">
-                    <div class="card-header-custom">
-                        <i class="fas fa-eye"></i>
-                        <h5 class="mb-0" data-i18n="preview_title">প্রিভিউ</h5>
-                        
-                        <div class="ms-auto">
-                            <div class="zoom-controls">
-                                <button class="zoom-btn" onclick="zoomOut()">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <span class="zoom-level" id="zoomLevel">100%</span>
-                                <button class="zoom-btn" onclick="zoomIn()">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-body-custom">
-                        <!-- Empty State -->
-                        <div class="text-center py-5" id="noFileMessage">
-                            <i class="fas fa-file-pdf fa-5x text-muted mb-3 float-animation"></i>
-                            <h5 class="text-muted" data-i18n="no_file">কোনো PDF ফাইল আপলোড করা হয়নি</h5>
-                            <p class="text-muted small" data-i18n="upload_first">প্রথমে PDF ফাইল আপলোড করুন</p>
-                        </div>
-                        
-                        <!-- Preview Container -->
-                        <div class="preview-container d-none" id="previewContainer">
-                            <div class="a4-page" id="a4Page">
-                                <!-- Card 1 -->
-                                <div class="nid-card-wrapper" id="card1">
-                                    <canvas id="pdfCanvas1"></canvas>
-                                </div>
-                                
-                                <!-- Card 2 -->
-                                <div class="nid-card-wrapper mt-4" id="card2">
-                                    <canvas id="pdfCanvas2"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <button class="btn-main btn-primary" onclick="downloadAs('pdf')">
+                <i class="fas fa-file-pdf"></i> PDF ডাউনলোড
+            </button>
+
+            <div class="nav-buttons">
+                <button class="btn-main btn-back" onclick="goToStep(3)">
+                    <i class="fas fa-arrow-left"></i> পেছনে
+                </button>
+                <button class="btn-main btn-back" onclick="resetAll()">
+                    <i class="fas fa-redo"></i> নতুন শুরু
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Custom Toast -->
-    <div class="toast-custom" id="toast">
+    <!-- Print Area -->
+    <div id="print-area" style="display:none;"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
         <div class="toast-icon" id="toastIcon">
             <i class="fas fa-check"></i>
         </div>
-        <div class="toast-message" id="toastMessage"></div>
+        <div class="toast-msg" id="toastMsg"></div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4 mt-5 no-print">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>NID Card Pro</h6>
-                    <p class="small mb-0" data-i18n="footer_copyright">© ২০২৬ NID Card Pro - সর্বস্বত্ব সংরক্ষিত</p>
-                </div>
-                <div class="col-md-6">
-                    <div class="social-links">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-github"></i></a>
-                    </div>
-                </div>
-            </div>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-box">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">প্রসেস হচ্ছে...</div>
+            <div class="loader-text text-muted" style="font-size: 0.75rem; margin-top: 5px;">অনুগ্রহ করে অপেক্ষা করুন</div>
         </div>
-    </footer>
+    </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
     <script>
-        // ========== LANGUAGE TRANSLATIONS ==========
-        const translations = {
-            bn: {
-                upload_title: 'PDF আপলোড করুন',
-                upload_instruction: 'এখানে ক্লিক করুন অথবা PDF ড্র্যাগ করুন',
-                upload_hint: 'সর্বোচ্চ 2টি PDF ফাইল সাপোর্ট করা হয়',
-                card_position: 'কার্ড পজিশন',
-                card1_top: 'কার্ড ১ উপরে',
-                card2_top: 'কার্ড ২ উপরে',
-                uploaded_files: 'আপলোডকৃত ফাইল',
-                download_pdf: 'PDF ডাউনলোড',
-                print: 'প্রিন্ট',
-                download_image: 'ইমেজ ডাউনলোড',
-                reset: 'রিসেট',
-                preview_title: 'প্রিভিউ',
-                no_file: 'কোনো PDF ফাইল আপলোড করা হয়নি',
-                upload_first: 'প্রথমে PDF ফাইল আপলোড করুন',
-                footer_copyright: '© ২০২৬ NID Card Pro - সর্বস্বত্ব সংরক্ষিত',
-                success_upload: 'PDF ফাইল সফলভাবে লোড হয়েছে!',
-                error_upload: 'PDF ফাইল লোড করতে সমস্যা হয়েছে!',
-                invalid_file: 'অবৈধ ফাইল! শুধুমাত্র PDF ফাইল সাপোর্ট করা হয়',
-                pdf_required: 'অনুগ্রহ করে প্রথমে PDF ফাইল আপলোড করুন',
-                download_success: 'ডাউনলোড সফল হয়েছে!',
-                print_success: 'প্রিন্ট শুরু হয়েছে!',
-                reset_success: 'সবকিছু রিসেট হয়েছে!',
-                file_limit: 'সর্বোচ্চ 2টি ফাইল সাপোর্ট করা হয়'
-            },
-            en: {
-                upload_title: 'Upload PDF',
-                upload_instruction: 'Click here or drag PDF',
-                upload_hint: 'Maximum 2 PDF files supported',
-                card_position: 'Card Position',
-                card1_top: 'Card 1 Top',
-                card2_top: 'Card 2 Top',
-                uploaded_files: 'Uploaded Files',
-                download_pdf: 'Download PDF',
-                print: 'Print',
-                download_image: 'Download Image',
-                reset: 'Reset',
-                preview_title: 'Preview',
-                no_file: 'No PDF uploaded yet',
-                upload_first: 'Please upload a PDF file first',
-                footer_copyright: '© 2026 NID Card Pro - All Rights Reserved',
-                success_upload: 'PDF loaded successfully!',
-                error_upload: 'Error loading PDF file!',
-                invalid_file: 'Invalid file! Only PDF files are supported',
-                pdf_required: 'Please upload a PDF file first',
-                download_success: 'Download successful!',
-                print_success: 'Print started!',
-                reset_success: 'Everything has been reset!',
-                file_limit: 'Maximum 2 files supported'
-            }
-        };
-
-        // ========== GLOBAL VARIABLES ==========
-        let pdfDocs = [];
-        let currentLanguage = 'bn';
-        let topFirst = true;
-        let currentZoom = 1;
-        let uploadedFiles = [];
-
         // PDF.js Worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // ========== INITIALIZATION ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            // Hide loader after 2 seconds
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 2000);
-            
-            // Initialize
-            initialize();
+        // Global Variables
+        let pdfDoc = null;
+        let cropper = null;
+        let pdfCanvas = document.getElementById('pdf-canvas');
+        let ctx = pdfCanvas.getContext('2d');
+        let frontData = null;
+        let backData = null;
+        let currentStep = 1;
+        
+        // Settings
+        let card1Settings = { x: 0, y: 0, scale: 1, opacity: 1 };
+        let card2Settings = { x: 0, y: 0, scale: 1, opacity: 1 };
+        let bothSettings = { x: 0, y: 0, scale: 1, opacity: 1 };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDragAndDrop();
+            setupFileInput();
+            preventLongPress();
         });
 
-        function initialize() {
-            // Set default language
-            switchLanguage('bn');
-            
-            // Set default position
-            setTopFirst(true);
-            
-            // Set default zoom
-            applyZoom();
-            
-            // Toast initialization
-            initToast();
-        }
-
-        // ========== LANGUAGE SWITCH ==========
-        function switchLanguage(lang) {
-            currentLanguage = lang;
-            
-            // Update all text elements
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    element.textContent = translations[lang][key];
-                }
-            });
-            
-            // Update navbar language buttons
-            document.querySelectorAll('.btn-language').forEach(btn => {
-                if (btn.textContent.includes('বাংলা')) {
-                    btn.classList.toggle('active', lang === 'bn');
-                } else {
-                    btn.classList.toggle('active', lang === 'en');
-                }
+        // Prevent Long Press
+        function preventLongPress() {
+            document.addEventListener('contextmenu', e => {
+                if (e.target.tagName === 'CANVAS') e.preventDefault();
             });
         }
 
-        // ========== FILE UPLOAD ==========
-        document.getElementById('pdfInput').addEventListener('change', handleFileUpload);
-
-        const uploadZone = document.getElementById('uploadZone');
-
-        uploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadZone.classList.add('dragover');
-        });
-
-        uploadZone.addEventListener('dragleave', () => {
-            uploadZone.classList.remove('dragover');
-        });
-
-        uploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadZone.classList.remove('dragover');
-            
-            const files = e.dataTransfer.files;
-            processFiles(files);
-        });
-
-        async function handleFileUpload(e) {
-            const files = e.target.files;
-            processFiles(files);
+        // File Input
+        function setupFileInput() {
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                handleFile(this.files[0]);
+            });
         }
 
-        async function processFiles(files) {
-            const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
-            
-            if (pdfFiles.length === 0) {
-                showToast(translations[currentLanguage].invalid_file, 'error');
-                return;
-            }
-            
-            if (pdfFiles.length > 2) {
-                showToast(translations[currentLanguage].file_limit, 'warning');
-                pdfFiles = pdfFiles.slice(0, 2);
-            }
-            
-            // Clear previous
-            pdfDocs = [];
-            uploadedFiles = [];
-            document.getElementById('fileList').innerHTML = '';
-            
-            // Show upload status
-            document.getElementById('uploadStatus').classList.remove('d-none');
-            
-            // Progress bar
-            const progressBar = document.getElementById('uploadProgress');
-            progressBar.style.width = '0%';
-            
-            try {
-                for (let i = 0; i < pdfFiles.length; i++) {
-                    const file = pdfFiles[i];
-                    
-                    // Add to uploaded files list
-                    uploadedFiles.push(file.name);
-                    addFileToList(file.name, file.size);
-                    
-                    // Update progress
-                    progressBar.style.width = `${((i + 1) / pdfFiles.length) * 100}%`;
-                    
-                    // Load PDF
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                    pdfDocs.push(pdf);
-                }
-                
-                // Render PDFs
-                await renderPDFs();
-                
-                // Show preview
-                document.getElementById('noFileMessage').classList.add('d-none');
-                document.getElementById('previewContainer').classList.remove('d-none');
-                
-                // Enable buttons
-                document.getElementById('downloadPdfBtn').disabled = false;
-                document.getElementById('printBtn').disabled = false;
-                document.getElementById('downloadImgBtn').disabled = false;
-                
-                // Show success
-                setTimeout(() => {
-                    progressBar.style.width = '100%';
-                }, 500);
-                
-                showToast(translations[currentLanguage].success_upload, 'success');
-                
-            } catch (error) {
-                console.error('Error loading PDF:', error);
-                showToast(translations[currentLanguage].error_upload, 'error');
-            }
+        // Drag & Drop
+        function setupDragAndDrop() {
+            const zone = document.getElementById('uploadZone');
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                handleFile(e.dataTransfer.files[0]);
+            });
+            zone.addEventListener('click', () => document.getElementById('fileInput').click());
         }
 
-        function addFileToList(fileName, fileSize) {
-            const fileList = document.getElementById('fileList');
-            
-            const div = document.createElement('div');
-            div.className = 'd-flex align-items-center justify-content-between p-2 border rounded mb-2';
-            div.innerHTML = `
-                <div>
-                    <i class="fas fa-file-pdf text-danger me-2"></i>
-                    <span class="small">${fileName}</span>
-                    <span class="text-muted small ms-2">(${(fileSize / 1024).toFixed(2)} KB)</span>
-                </div>
-                <i class="fas fa-check-circle text-success"></i>
-            `;
-            
-            fileList.appendChild(div);
-        }
-
-        // ========== RENDER PDFS ==========
-        async function renderPDFs() {
-            if (pdfDocs.length === 1) {
-                // If only one PDF, use first two pages
-                await renderPage(1, 'pdfCanvas1', pdfDocs[0]);
-                await renderPage(2, 'pdfCanvas2', pdfDocs[0]);
-            } else if (pdfDocs.length >= 2) {
-                // If two PDFs, use first page of each
-                await renderPage(1, 'pdfCanvas1', pdfDocs[0]);
-                await renderPage(1, 'pdfCanvas2', pdfDocs[1]);
-            }
-            
-            // Apply position
-            setTopFirst(topFirst);
-        }
-
-        async function renderPage(pageNum, canvasId, pdfDoc) {
-            const page = await pdfDoc.getPage(pageNum);
-            const viewport = page.getViewport({ scale: 3 }); // HD quality (3x)
-            
-            const canvas = document.getElementById(canvasId);
-            const context = canvas.getContext('2d');
-            
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            
-            // Clear canvas
-            context.fillStyle = 'white';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Render page
-            await page.render({
-                canvasContext: context,
-                viewport: viewport
-            }).promise;
-        }
-
-        // ========== CARD POSITION ==========
-        function setTopFirst(value) {
-            topFirst = value;
-            
-            const card1 = document.getElementById('card1');
-            const card2 = document.getElementById('card2');
-            
-            const btn1 = document.getElementById('topFirstBtn');
-            const btn2 = document.getElementById('bottomFirstBtn');
-            
-            if (topFirst) {
-                card1.classList.remove('mt-4');
-                card2.classList.add('mt-4');
-                
-                btn1.classList.add('active');
-                btn2.classList.remove('active');
-                
-                // Animation
-                card1.style.animation = 'none';
-                card1.offsetHeight;
-                card1.style.animation = 'slideInUp 0.5s ease';
-            } else {
-                card1.classList.add('mt-4');
-                card2.classList.remove('mt-4');
-                
-                btn1.classList.remove('active');
-                btn2.classList.add('active');
-                
-                // Animation
-                card2.style.animation = 'none';
-                card2.offsetHeight;
-                card2.style.animation = 'slideInUp 0.5s ease';
-            }
-        }
-
-        // ========== ZOOM CONTROLS ==========
-        function zoomIn() {
-            currentZoom = Math.min(2, currentZoom + 0.1);
-            applyZoom();
-        }
-
-        function zoomOut() {
-            currentZoom = Math.max(0.5, currentZoom - 0.1);
-            applyZoom();
-        }
-
-        function applyZoom() {
-            const a4Page = document.getElementById('a4Page');
-            a4Page.style.transform = `scale(${currentZoom})`;
-            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
-        }
-
-        // ========== DOWNLOAD PDF ==========
-        async function downloadPDF() {
-            if (pdfDocs.length === 0) {
-                showToast(translations[currentLanguage].pdf_required, 'warning');
-                return;
-            }
-            
+        // Handle File
+        async function handleFile(file) {
+            if (!file) return;
             showLoader();
             
             try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-                
-                // Add background
-                doc.setFillColor(248, 250, 252);
-                doc.rect(0, 0, 210, 297, 'F');
-                
-                // Add title
-                doc.setFontSize(16);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(37, 99, 235);
-                doc.text('NID Card Document', 105, 20, { align: 'center' });
-                
-                // Add decorative line
-                doc.setDrawColor(37, 99, 235);
-                doc.setLineWidth(1);
-                doc.line(30, 25, 180, 25);
-                
-                // Add cards
-                if (topFirst) {
-                    if (pdfDocs.length === 1) {
-                        await addCardToPDF(doc, pdfDocs[0], 1, 35);
-                        await addCardToPDF(doc, pdfDocs[0], 2, 140);
-                    } else {
-                        await addCardToPDF(doc, pdfDocs[0], 1, 35);
-                        await addCardToPDF(doc, pdfDocs[1], 1, 140);
-                    }
-                } else {
-                    if (pdfDocs.length === 1) {
-                        await addCardToPDF(doc, pdfDocs[0], 2, 35);
-                        await addCardToPDF(doc, pdfDocs[0], 1, 140);
-                    } else {
-                        await addCardToPDF(doc, pdfDocs[1], 1, 35);
-                        await addCardToPDF(doc, pdfDocs[0], 1, 140);
-                    }
+                // Reset previous cropper
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
                 }
                 
-                // Save
-                doc.save('nid-cards.pdf');
-                showToast(translations[currentLanguage].download_success, 'success');
+                if (file.type === 'application/pdf') {
+                    const buf = await file.arrayBuffer();
+                    pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+                    await renderPDF(1);
+                } else if (file.type.startsWith('image/')) {
+                    await loadImage(file);
+                } else {
+                    showToast('অবৈধ ফাইল!', 'error');
+                    return;
+                }
                 
-            } catch (error) {
-                console.error('Error downloading PDF:', error);
-                showToast('Error downloading PDF!', 'error');
+                // Setup cropper with delay
+                setTimeout(setupCropper, 100);
+                goToStep(2);
+                showToast('ফাইল লোড সফল!', 'success');
+            } catch (e) {
+                console.error(e);
+                showToast('ফাইল লোডে সমস্যা!', 'error');
             }
             
             hideLoader();
         }
 
-        async function addCardToPDF(doc, pdf, pageNum, yOffset) {
-            const page = await pdf.getPage(pageNum);
+        // Render PDF
+        async function renderPDF(num) {
+            const page = await pdfDoc.getPage(num);
             const viewport = page.getViewport({ scale: 2 });
-            
-            // Calculate dimensions
-            const maxWidth = 170;
-            const maxHeight = 110;
-            
-            const ratio = Math.min(maxWidth / viewport.width, maxHeight / viewport.height);
-            const width = viewport.width * ratio;
-            const height = viewport.height * ratio;
-            
-            // Create canvas
-            const canvas = document.createElement('canvas');
-            canvas.width = viewport.width * ratio * 2;
-            canvas.height = viewport.height * ratio * 2;
-            
-            const context = canvas.getContext('2d');
-            context.fillStyle = 'white';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            
-            await page.render({
-                canvasContext: context,
-                viewport: viewport
-            }).promise;
-            
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            
-            // Add image to PDF
-            doc.addImage(imgData, 'JPEG', 20, yOffset, width, height);
-            
-            // Add border
-            doc.setDrawColor(203, 213, 225);
-            doc.setLineWidth(0.5);
-            doc.roundedRect(20, yOffset, width, height, 5, 5);
+            pdfCanvas.width = viewport.width;
+            pdfCanvas.height = viewport.height;
+            await page.render({ canvasContext: ctx, viewport }).promise;
         }
 
-        // ========== PRINT ==========
-        function printPDF() {
-            if (pdfDocs.length === 0) {
-                showToast(translations[currentLanguage].pdf_required, 'warning');
+        // Load Image
+        function loadImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        // Resize large images for better cropper performance
+                        const maxWidth = 1200;
+                        const maxHeight = 1200;
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > maxWidth || height > maxHeight) {
+                            const ratio = Math.min(maxWidth / width, maxHeight / height);
+                            width = Math.round(width * ratio);
+                            height = Math.round(height * ratio);
+                        }
+                        
+                        pdfCanvas.width = width;
+                        pdfCanvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve();
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Setup Cropper
+        function setupCropper() {
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(pdfCanvas, {
+                aspectRatio: 1.6,
+                viewMode: 1,
+                autoCropArea: 0.9,
+                responsive: true
+            });
+        }
+
+        // Crop
+        function cropImage(side) {
+            if (!cropper) {
+                showToast('আগে ফাইল লোড করুন!', 'warning');
                 return;
             }
             
-            showToast(translations[currentLanguage].print_success, 'success');
+            const canvas = cropper.getCroppedCanvas({
+                width: 1200,
+                height: 750,
+                fillColor: '#fff'
+            });
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+            
+            if (side === 'front') {
+                frontData = canvas;
+                document.getElementById('front-preview').src = dataUrl;
+                document.getElementById('front-preview').style.display = 'block';
+                showToast('ফ্রন্ট ক্রপ সফল!', 'success');
+            } else {
+                backData = canvas;
+                document.getElementById('back-preview').src = dataUrl;
+                document.getElementById('back-preview').style.display = 'block';
+                showToast('ব্যাক ক্রপ সফল!', 'success');
+            }
+        }
+
+        // Navigation
+        function goToStep(step) {
+            if (step === 2 && !pdfDoc && !pdfCanvas.width) {
+                showToast('আগে ফাইল আপলোড করুন!', 'warning');
+                return;
+            }
+            if (step === 3 && !frontData && !backData) {
+                showToast('আগে ক্রপ করুন!', 'warning');
+                return;
+            }
+            
+            currentStep = step;
+            
+            for (let i = 1; i <= 4; i++) {
+                const ind = document.getElementById(`s${i}`);
+                ind.classList.remove('active', 'completed');
+                if (i < step) ind.classList.add('completed');
+                if (i === step) ind.classList.add('active');
+            }
+            
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).classList.remove('active');
+            }
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            if (step === 3 || step === 4) placeCards();
+        }
+
+        // Update Both
+        function updateBoth() {
+            bothSettings.scale = document.getElementById('bothSize').value / 100;
+            bothSettings.opacity = document.getElementById('bothOpacity').value / 100;
+            
+            document.getElementById('bothSizeVal').textContent = document.getElementById('bothSize').value + '%';
+            document.getElementById('bothOpacityVal').textContent = document.getElementById('bothOpacity').value + '%';
+            
+            card1Settings.scale = bothSettings.scale;
+            card2Settings.scale = bothSettings.scale;
+            card1Settings.opacity = bothSettings.opacity;
+            card2Settings.opacity = bothSettings.opacity;
+            
+            document.getElementById('card1Size').value = document.getElementById('bothSize').value;
+            document.getElementById('card1Opacity').value = document.getElementById('bothOpacity').value;
+            document.getElementById('card2Size').value = document.getElementById('bothSize').value;
+            document.getElementById('card2Opacity').value = document.getElementById('bothOpacity').value;
+            
+            document.getElementById('card1SizeVal').textContent = document.getElementById('bothSize').value + '%';
+            document.getElementById('card1OpacityVal').textContent = document.getElementById('bothOpacity').value + '%';
+            document.getElementById('card2SizeVal').textContent = document.getElementById('bothSize').value + '%';
+            document.getElementById('card2OpacityVal').textContent = document.getElementById('bothOpacity').value + '%';
+            
+            placeCards();
+        }
+
+        // Update Custom
+        function updateCustom() {
+            card1Settings.scale = document.getElementById('card1Size').value / 100;
+            card1Settings.opacity = document.getElementById('card1Opacity').value / 100;
+            card2Settings.scale = document.getElementById('card2Size').value / 100;
+            card2Settings.opacity = document.getElementById('card2Opacity').value / 100;
+            
+            document.getElementById('card1SizeVal').textContent = document.getElementById('card1Size').value + '%';
+            document.getElementById('card1OpacityVal').textContent = document.getElementById('card1Opacity').value + '%';
+            document.getElementById('card2SizeVal').textContent = document.getElementById('card2Size').value + '%';
+            document.getElementById('card2OpacityVal').textContent = document.getElementById('card2Opacity').value + '%';
+            
+            placeCards();
+        }
+
+        // Move Both
+        function moveBoth(direction) {
+            switch(direction) {
+                case 'up': bothSettings.y -= 10; break;
+                case 'down': bothSettings.y += 10; break;
+                case 'left': bothSettings.x -= 10; break;
+                case 'right': bothSettings.x += 10; break;
+            }
+            placeCards();
+        }
+
+        // Move Card
+        function moveCard(cardNum, direction) {
+            const settings = cardNum === 1 ? card1Settings : card2Settings;
+            switch(direction) {
+                case 'up': settings.y -= 10; break;
+                case 'down': settings.y += 10; break;
+                case 'left': settings.x -= 10; break;
+                case 'right': settings.x += 10; break;
+            }
+            placeCards();
+        }
+
+        // Place Cards
+        function placeCards() {
+            const paper = document.getElementById('paperSize').value;
+            let width = 794, height = 1123;
+            
+            if (paper === '4x6') {
+                width = 600;
+                height = 900;
+            } else if (paper === 'PVC') {
+                width = 300;
+                height = 200;
+            }
+            
+            const canvas = document.getElementById('final-canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const c = canvas.getContext('2d');
+            c.fillStyle = '#ffffff';
+            c.fillRect(0, 0, width, height);
+            
+            const maxCardW = Math.min(600, width * 0.9);
+            const maxCardH = maxCardW * 0.6;
+            
+            if (frontData) {
+                c.save();
+                c.globalAlpha = card1Settings.opacity * bothSettings.opacity;
+                const cw = maxCardW * card1Settings.scale * bothSettings.scale;
+                const ch = maxCardH * card1Settings.scale * bothSettings.scale;
+                const cx = (width - cw) / 2 + card1Settings.x + bothSettings.x;
+                const cy = (height / 2) - ch - 20 + card1Settings.y + bothSettings.y;
+                c.drawImage(frontData, cx, cy, cw, ch);
+                c.restore();
+            }
+            
+            if (backData) {
+                c.save();
+                c.globalAlpha = card2Settings.opacity * bothSettings.opacity;
+                const cw = maxCardW * card2Settings.scale * bothSettings.scale;
+                const ch = maxCardH * card2Settings.scale * bothSettings.scale;
+                const cx = (width - cw) / 2 + card2Settings.x + bothSettings.x;
+                const cy = (height / 2) + 20 + card2Settings.y + bothSettings.y;
+                c.drawImage(backData, cx, cy, cw, ch);
+                c.restore();
+            }
+            
+            showToast('কার্ড প্লেস সম্পন্ন!', 'success');
+        }
+
+        // Print
+        function printCard() {
+            const canvas = document.getElementById('final-canvas');
+            const dataUrl = canvas.toDataURL('image/png');
+            
+            const printArea = document.getElementById('print-area');
+            printArea.innerHTML = `<img src="${dataUrl}" style="width:100%;height:auto;">`;
+            printArea.style.display = 'block';
+            
             setTimeout(() => {
                 window.print();
-            }, 500);
+            }, 100);
         }
 
-        // ========== DOWNLOAD IMAGE ==========
-        async function downloadImage() {
-            if (pdfDocs.length === 0) {
-                showToast(translations[currentLanguage].pdf_required, 'warning');
-                return;
+        // Download HD
+        function downloadAs(format) {
+            const canvas = document.getElementById('final-canvas');
+            
+            // HD (600 DPI = 6x)
+            const hdCanvas = document.createElement('canvas');
+            hdCanvas.width = canvas.width * 6;
+            hdCanvas.height = canvas.height * 6;
+            const hdCtx = hdCanvas.getContext('2d');
+            
+            hdCtx.fillStyle = '#ffffff';
+            hdCtx.fillRect(0, 0, hdCanvas.width, hdCanvas.height);
+            
+            const scale = 6;
+            
+            if (frontData) {
+                const maxW = Math.min(600, canvas.width * 0.9) * scale;
+                const maxH = maxW * 0.6;
+                const cw = maxW * card1Settings.scale * bothSettings.scale;
+                const ch = maxH * card1Settings.scale * bothSettings.scale;
+                const cx = (hdCanvas.width - cw) / 2 + (card1Settings.x + bothSettings.x) * scale;
+                const cy = (hdCanvas.height / 2) - ch - 20 * scale + (card1Settings.y + bothSettings.y) * scale;
+                hdCtx.globalAlpha = card1Settings.opacity * bothSettings.opacity;
+                hdCtx.drawImage(frontData, cx, cy, cw, ch);
             }
             
-            showLoader();
+            if (backData) {
+                const maxW = Math.min(600, canvas.width * 0.9) * scale;
+                const maxH = maxW * 0.6;
+                const cw = maxW * card2Settings.scale * bothSettings.scale;
+                const ch = maxH * card2Settings.scale * bothSettings.scale;
+                const cx = (hdCanvas.width - cw) / 2 + (card2Settings.x + bothSettings.x) * scale;
+                const cy = (hdCanvas.height / 2) + 20 * scale + (card2Settings.y + bothSettings.y) * scale;
+                hdCtx.globalAlpha = card2Settings.opacity * bothSettings.opacity;
+                hdCtx.drawImage(backData, cx, cy, cw, ch);
+            }
             
-            try {
-                const a4Page = document.getElementById('a4Page');
-                const format = document.getElementById('imageFormat').value;
-                
-                // Remove transform for proper rendering
-                const originalTransform = a4Page.style.transform;
-                a4Page.style.transform = 'none';
-                
-                const canvas = await html2canvas(a4Page, {
-                    scale: 3,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    onclone: (clonedDoc) => {
-                        const clonedElement = clonedDoc.getElementById('a4Page');
-                        clonedElement.style.transform = 'none';
-                    }
-                });
-                
-                // Restore transform
-                a4Page.style.transform = originalTransform;
-                
-                // Create download link
+            if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const imgData = hdCanvas.toDataURL('image/jpeg', 0.95);
+                doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                doc.save('nid-cards.pdf');
+            } else {
                 const link = document.createElement('a');
                 link.download = `nid-cards.${format}`;
-                link.href = canvas.toDataURL(`image/${format}`, 1.0);
+                link.href = hdCanvas.toDataURL(`image/${format}`, 1.0);
                 link.click();
-                
-                showToast(translations[currentLanguage].download_success, 'success');
-                
-            } catch (error) {
-                console.error('Error downloading image:', error);
-                showToast('Error downloading image!', 'error');
             }
             
-            hideLoader();
+            showToast('HD ডাউনলোড সফল!', 'success');
         }
 
-        // ========== RESET ==========
+        // Reset
         function resetAll() {
-            // Clear uploaded files
-            pdfDocs = [];
-            uploadedFiles = [];
-            document.getElementById('pdfInput').value = '';
-            document.getElementById('fileList').innerHTML = '';
-            document.getElementById('uploadStatus').classList.add('d-none');
-            document.getElementById('uploadProgress').style.width = '0%';
+            frontData = null;
+            backData = null;
+            cropper = null;
+            pdfDoc = null;
             
-            // Hide preview
-            document.getElementById('noFileMessage').classList.remove('d-none');
-            document.getElementById('previewContainer').classList.add('d-none');
+            document.getElementById('fileInput').value = '';
+            document.getElementById('front-preview').src = '';
+            document.getElementById('front-preview').style.display = 'none';
+            document.getElementById('back-preview').src = '';
+            document.getElementById('back-preview').style.display = 'none';
             
-            // Disable buttons
-            document.getElementById('downloadPdfBtn').disabled = true;
-            document.getElementById('printBtn').disabled = true;
-            document.getElementById('downloadImgBtn').disabled = true;
+            card1Settings = { x: 0, y: 0, scale: 1, opacity: 1 };
+            card2Settings = { x: 0, y: 0, scale: 1, opacity: 1 };
+            bothSettings = { x: 0, y: 0, scale: 1, opacity: 1 };
             
-            // Reset zoom
-            currentZoom = 1;
-            applyZoom();
-            
-            // Reset position
-            setTopFirst(true);
-            
-            // Show toast
-            showToast(translations[currentLanguage].reset_success, 'success');
+            goToStep(1);
+            showToast('সব রিসেট হয়েছে!', 'success');
         }
 
-        // ========== TOAST NOTIFICATIONS ==========
-        let toastTimeout;
-
-        function initToast() {
-            // Toast is already in HTML
-        }
-
+        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toastIcon');
-            const msg = document.getElementById('toastMessage');
+            const msg = document.getElementById('toastMsg');
             
-            // Set icon
-            icon.innerHTML = type === 'success' ? '<i class="fas fa-check"></i>' :
-                            type === 'error' ? '<i class="fas fa-times"></i>' :
-                            '<i class="fas fa-exclamation"></i>';
-            
-            // Set message
             msg.textContent = message;
             
-            // Set toast class
-            toast.className = `toast-custom toast-${type}`;
+            if (type === 'success') {
+                toast.className = 'toast success';
+                icon.className = 'toast-icon';
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+                icon.style.background = 'var(--gradient-success)';
+            } else if (type === 'error') {
+                toast.className = 'toast error';
+                icon.className = 'toast-icon';
+                icon.innerHTML = '<i class="fas fa-times"></i>';
+                icon.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            } else {
+                toast.className = 'toast warning';
+                icon.className = 'toast-icon';
+                icon.innerHTML = '<i class="fas fa-exclamation"></i>';
+                icon.style.background = 'var(--gradient-warning)';
+            }
             
-            // Show toast
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 100);
-            
-            // Auto hide after 4 seconds
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 4000);
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ========== LOADER ==========
+        // Loader
         function showLoader() {
-            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('loader').classList.add('show');
         }
 
         function hideLoader() {
-            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('loader').classList.remove('show');
         }
     </script>
 </body>
